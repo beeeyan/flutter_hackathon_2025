@@ -15,6 +15,7 @@ class ResponseResult with _$ResponseResult {
 
   /// 失敗
   const factory ResponseResult.failure({
+    String? code,
     @Default(serverConnectionFailure) String message,
   }) = Failure;
 }

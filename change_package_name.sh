@@ -10,8 +10,9 @@ else
     sed -i "" -E s/package=\".*\"/package=\"$1\"/g ./android/app/src/debug/AndroidManifest.xml
     sed -i "" -E s/package=\".*\"/package=\"$1\"/g ./android/app/src/profile/AndroidManifest.xml
     echo AndroidManifest.xmlの変更完了
-    # 「applicationId "(初期パッケージ)"」を「applicationId "(引数)"」で置換
-    sed -i "" -E s/applicationId" \".*\""/applicationId" \"$1\""/g ./android/app/build.gradle 
+    # 「applicationId "(初期パッケージ)"」と「namespace "(初期パッケージ)"」を「applicationId "(引数)"」で置換
+    sed -i "" -E s/applicationId" \".*\""/applicationId" \"$1\""/g ./android/app/build.gradle
+    sed -i "" -E s/namespace" \".*\""/namespace" \"$1\""/g ./android/app/build.gradle
     echo build.gradleの変更完了
     # MainActivityのpackage名を変更
     # MainActivityの場所は初期のパッケージ名で変わるのでfindコマンドで取得する

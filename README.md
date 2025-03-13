@@ -174,6 +174,16 @@ Privacy Accessed API Reasons : CA92.1
   
 [参考](https://developer.apple.com/documentation/bundleresources/privacy_manifest_files/describing_use_of_required_reason_api/#4278401)
 
+### アプリバージョン
+
+`0.0.0+1`としている  
+※AppleDeveloperで初回ストア申請通過後、取り下げを行うかビルドナンバーをインクリメントしないと媒体アップロードができないため。
+
+### ThemeData
+
+`lib/config/theme`に雛形を作成している。  
+
+
 以下README雛形
 
 ----------------------------------
@@ -204,6 +214,9 @@ VSCode用の設定は追加済みである。
 ### 環境分け
 環境は以下を参考に`dev`（開発）と`prod`（本番）で分けています。  
 [【Flutter 3.7未満】Dart-defineのみを使って開発環境と本番環境を分ける](https://zenn.dev/altiveinc/articles/separating-environments-in-flutter-old-edition) 
+
+アプリアイコンも本記事を参考に環境分けしているため、  
+更新する場合は`assets/images/launcher`の画像を差し替えてください。
 
 iOSのbuildを実行するため、以下のスクリプトに実行権限を与えてください。  
 ```console

@@ -21,7 +21,7 @@ class BaseResponseData with _$BaseResponseData {
 
   /// HTTP レスポンスのレスポンスデータの方は不定 (dynamic) なので、
   /// それらのレスポンスデータはすべてこの fromDynamic コンストラクタに渡して、
-  /// dynamic を適当に Map<String, dynamic> に変更した上で、fromJson コンストラクタに渡して
+  /// dynamic を適当に `Map<String, dynamic>` に変更した上で、fromJson コンストラクタに渡して
   /// BaseResponseData インスタンスを生成して返す。
   factory BaseResponseData.fromDynamic(dynamic responseData) {
     final json = toResponseJson(responseData);

@@ -3,8 +3,8 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+import '../../util/exception/api_exception.dart';
 import '../api_error_messages.dart';
-import '../api_exceptions.dart';
 import '../dio/connectivity_interceptor.dart';
 import '../dio/dio.dart';
 import '../model/base_response_data/base_response_data.dart';
@@ -12,15 +12,11 @@ import '../model/response_result/response_result.dart';
 import 'abstract_api_client.dart';
 
 final apiClientProvider = Provider<ApiClient>(
-  (ref) => ApiClient(
-    ref.watch(dioProvider),
-  ),
+  (ref) => ApiClient(ref.watch(dioProvider)),
 );
 
 class ApiClient implements AbstractApiClient {
-  ApiClient(
-    this._dio,
-  );
+  ApiClient(this._dio);
 
   final Dio _dio;
 
@@ -45,21 +41,16 @@ class ApiClient implements AbstractApiClient {
       return ResponseResult.success(data: baseResponseData);
     } on DioException catch (dioException) {
       final exception = _handleDioException(dioException);
-      return ResponseResult.failure(
-        message: exception.toString(),
-      );
+      return ResponseResult.failure(message: exception.toString());
     } on ApiException catch (e) {
       return ResponseResult.failure(
-        message: e.message ?? e.toString(),
+        code: e.errorDetail.code,
+        message: e.errorDetail.message,
       );
     } on SocketException {
-      return const ResponseResult.failure(
-        message: networkNotConnected,
-      );
+      return const ResponseResult.failure(message: networkNotConnected);
     } on FormatException {
-      return const ResponseResult.failure(
-        message: responseFormatNotValid,
-      );
+      return const ResponseResult.failure(message: responseFormatNotValid);
     } on Exception catch (e) {
       return ResponseResult.failure(message: e.toString());
     }
@@ -90,21 +81,16 @@ class ApiClient implements AbstractApiClient {
       return ResponseResult.success(data: baseResponseData);
     } on DioException catch (dioException) {
       final exception = _handleDioException(dioException);
-      return ResponseResult.failure(
-        message: exception.toString(),
-      );
+      return ResponseResult.failure(message: exception.toString());
     } on ApiException catch (e) {
       return ResponseResult.failure(
-        message: e.message ?? e.toString(),
+        code: e.errorDetail.code,
+        message: e.errorDetail.message,
       );
     } on SocketException {
-      return const ResponseResult.failure(
-        message: networkNotConnected,
-      );
+      return const ResponseResult.failure(message: networkNotConnected);
     } on FormatException {
-      return const ResponseResult.failure(
-        message: responseFormatNotValid,
-      );
+      return const ResponseResult.failure(message: responseFormatNotValid);
     } on Exception catch (e) {
       return ResponseResult.failure(message: e.toString());
     }
@@ -135,21 +121,16 @@ class ApiClient implements AbstractApiClient {
       return ResponseResult.success(data: baseResponseData);
     } on DioException catch (dioException) {
       final exception = _handleDioException(dioException);
-      return ResponseResult.failure(
-        message: exception.toString(),
-      );
+      return ResponseResult.failure(message: exception.toString());
     } on ApiException catch (e) {
       return ResponseResult.failure(
-        message: e.message ?? e.toString(),
+        code: e.errorDetail.code,
+        message: e.errorDetail.message,
       );
     } on SocketException {
-      return const ResponseResult.failure(
-        message: networkNotConnected,
-      );
+      return const ResponseResult.failure(message: networkNotConnected);
     } on FormatException {
-      return const ResponseResult.failure(
-        message: responseFormatNotValid,
-      );
+      return const ResponseResult.failure(message: responseFormatNotValid);
     } on Exception catch (e) {
       return ResponseResult.failure(message: e.toString());
     }
@@ -180,21 +161,16 @@ class ApiClient implements AbstractApiClient {
       return ResponseResult.success(data: baseResponseData);
     } on DioException catch (dioException) {
       final exception = _handleDioException(dioException);
-      return ResponseResult.failure(
-        message: exception.toString(),
-      );
+      return ResponseResult.failure(message: exception.toString());
     } on ApiException catch (e) {
       return ResponseResult.failure(
-        message: e.message ?? e.toString(),
+        code: e.errorDetail.code,
+        message: e.errorDetail.message,
       );
     } on SocketException {
-      return const ResponseResult.failure(
-        message: networkNotConnected,
-      );
+      return const ResponseResult.failure(message: networkNotConnected);
     } on FormatException {
-      return const ResponseResult.failure(
-        message: responseFormatNotValid,
-      );
+      return const ResponseResult.failure(message: responseFormatNotValid);
     } on Exception catch (e) {
       return ResponseResult.failure(message: e.toString());
     }
@@ -225,21 +201,16 @@ class ApiClient implements AbstractApiClient {
       return ResponseResult.success(data: baseResponseData);
     } on DioException catch (dioException) {
       final exception = _handleDioException(dioException);
-      return ResponseResult.failure(
-        message: exception.toString(),
-      );
+      return ResponseResult.failure(message: exception.toString());
     } on ApiException catch (e) {
       return ResponseResult.failure(
-        message: e.message ?? e.toString(),
+        code: e.errorDetail.code,
+        message: e.errorDetail.message,
       );
     } on SocketException {
-      return const ResponseResult.failure(
-        message: networkNotConnected,
-      );
+      return const ResponseResult.failure(message: networkNotConnected);
     } on FormatException {
-      return const ResponseResult.failure(
-        message: responseFormatNotValid,
-      );
+      return const ResponseResult.failure(message: responseFormatNotValid);
     } on Exception catch (e) {
       return ResponseResult.failure(message: e.toString());
     }
@@ -266,21 +237,16 @@ class ApiClient implements AbstractApiClient {
       return ResponseResult.success(data: baseResponseData);
     } on DioException catch (dioException) {
       final exception = _handleDioException(dioException);
-      return ResponseResult.failure(
-        message: exception.toString(),
-      );
+      return ResponseResult.failure(message: exception.toString());
     } on ApiException catch (e) {
       return ResponseResult.failure(
-        message: e.message ?? e.toString(),
+        code: e.errorDetail.code,
+        message: e.errorDetail.message,
       );
     } on SocketException {
-      return const ResponseResult.failure(
-        message: networkNotConnected,
-      );
+      return const ResponseResult.failure(message: networkNotConnected);
     } on FormatException {
-      return const ResponseResult.failure(
-        message: responseFormatNotValid,
-      );
+      return const ResponseResult.failure(message: responseFormatNotValid);
     } on Exception catch (e) {
       return ResponseResult.failure(message: e.toString());
     }
@@ -301,23 +267,24 @@ class ApiClient implements AbstractApiClient {
     required int? statusCode,
     required BaseResponseData data,
   }) {
-    final message = data.main['message'] as String?;
+    // final message = data.main['message'] as String?;
     if (statusCode == 400) {
-      throw ApiException(message: message);
+      throw ApiException(errorDetail: ApiExceptionDetail.badRequest);
     }
     if (statusCode == 401) {
-      throw UnauthorizedException(message: message);
+      // throw UnauthorizedException(message: message);
+      throw ApiException(errorDetail: ApiExceptionDetail.unauthorized);
     }
     if (statusCode == 403) {
-      throw ForbiddenException(message: message);
+      throw ApiException(errorDetail: ApiExceptionDetail.forbidden);
     }
     if (statusCode == 404) {
-      throw ApiNotFoundException(message: message);
+      throw ApiException(errorDetail: ApiExceptionDetail.notFound);
     }
     // statusCode が null のときはとりあえず 400 番扱いで良いか確認が必要
     // そもそも、それがどのような場合かは特定できていない。
     if ((statusCode ?? 400) >= 400) {
-      throw ApiException(message: message);
+      throw ApiException(errorDetail: ApiExceptionDetail.badRequest);
     }
   }
 
@@ -328,14 +295,14 @@ class ApiClient implements AbstractApiClient {
     final errorResponse = dioException.response;
     final dynamic error = dioException.error;
     if (errorType.isTimeout) {
-      return const ApiTimeoutException();
+      return ApiException(errorDetail: ApiExceptionDetail.notConnected);
     }
     if (error is ErrorCode && error == ErrorCode.networkNotConnected) {
-      return const NetworkNotConnectedException();
+      return ApiException(errorDetail: ApiExceptionDetail.networkNotConnected);
     }
     if (errorResponse == null) {
-      return const ApiException();
+      return ApiException(errorDetail: ApiExceptionDetail.badRequest);
     }
-    return const ApiException();
+    return ApiException(errorDetail: ApiExceptionDetail.badRequest);
   }
 }

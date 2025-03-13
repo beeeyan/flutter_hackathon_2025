@@ -5,9 +5,11 @@
 *.swp
 .DS_Store
 .atom/
+.build/
 .buildlog/
 .history
 .svn/
+.swiftpm/
 migrate_working_dir/
 
 # IntelliJ related
@@ -43,6 +45,9 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
+# Android related
+**/android/app/.cxx/
+
 # iOS related
 **/ios/Flutter/DartDefines.xcconfig
 
@@ -50,3 +55,8 @@ app.*.map.json
 
 # FVM Version Cache
 .fvm/
+
+# appIcon
+/android/app/src/main/res/drawable-*/ic_launcher_foreground.png
+/android/app/src/main/res/drawable-*/ic_launcher_background.png
+/android/app/src/main/res/mipmap-*/ic_launcher.png

@@ -1,4 +1,4 @@
-final flavor = Flavor.fromEnvironment;
+final Flavor flavor = Flavor.fromEnvironment;
 
 enum Flavor {
   dev,
