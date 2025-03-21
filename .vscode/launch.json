@@ -8,6 +8,8 @@
             "program": "lib/main.dart",
             "flutterMode": "debug",
             "args": [
+                "--flavor",
+                "dev",
                 "--dart-define=FLAVOR=dev"
             ]
         },
@@ -18,6 +20,8 @@
             "program": "lib/main.dart",
             "flutterMode": "debug",
             "args": [
+                "--flavor",
+                "prod",
                 "--dart-define=FLAVOR=prod"
             ]
         },
@@ -28,6 +32,8 @@
             "program": "lib/main.dart",
             "flutterMode": "release",
             "args": [
+                "--flavor",
+                "prod",
                 "--dart-define=FLAVOR=prod"
             ]
         }

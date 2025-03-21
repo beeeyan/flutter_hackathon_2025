@@ -48,15 +48,5 @@ app.*.map.json
 # Android related
 **/android/app/.cxx/
 
-# iOS related
-**/ios/Flutter/DartDefines.xcconfig
-
-# fvm
-
 # FVM Version Cache
 .fvm/
-
-# appIcon
-/android/app/src/main/res/drawable-*/ic_launcher_foreground.png
-/android/app/src/main/res/drawable-*/ic_launcher_background.png
-/android/app/src/main/res/mipmap-*/ic_launcher.png

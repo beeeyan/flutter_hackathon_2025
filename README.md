@@ -9,7 +9,7 @@
 
 プロジェクトは以下で作成している。  
 ※fvm前提  
-※大本はFlutterバージョン「3.24.1」で作成
+※大本はFlutterバージョン「3.29.0」で作成
 
 ```console
 $ fvm use stable --force
@@ -58,12 +58,11 @@ $ ./change_package_name.sh com.example.app
   
 ## Flutterバージョン
 FVMが使用しているFlutterのバージョンは[.fvmrc](.fvmrc)に記載されている。  
-Flutterのバージョンを変更したい場合は`fvm use`コマンドを使用する。  
-'''
-# 例
+Flutterのバージョンを変更したい場合は`fvm use`コマンドを使用する。 
+```
 $ fvm use stable
-$ fvm use 3.24.1
-'''
+$ fvm use 3.29.0
+```
 
 ## Githubの設定
 
@@ -212,35 +211,36 @@ VSCode用の設定は追加済みである。
         - main.dart などの dart ファイルを開き、エディタの右下の「Dart」部分をクリックして、該当のバージョンのFlutterが読み込まれていればOK
 
 ### 環境分け
-環境は以下を参考に`dev`（開発）と`prod`（本番）で分けています。  
-[【Flutter 3.7未満】Dart-defineのみを使って開発環境と本番環境を分ける](https://zenn.dev/altiveinc/articles/separating-environments-in-flutter-old-edition) 
+環境は公式ドキュメントを参考に`dev`（開発）と`prod`（本番）で分けています。  
 
-アプリアイコンも本記事を参考に環境分けしているため、  
-更新する場合は`assets/images/launcher`の画像を差し替えてください。
+* [Set up Flutter flavors for Android](https://docs.flutter.dev/deployment/flavors)
+* [Set up Flutter flavors for iOS and macOS](https://docs.flutter.dev/deployment/flavors-ios)
 
-iOSのbuildを実行するため、以下のスクリプトに実行権限を与えてください。  
-```console
-$ chmod 755 ios/scripts/retrieve_dart_defines.sh
+アプリアイコンは[flutter_launcher_icons](https://pub.dev/packages/flutter_launcher_icons)を使用し環境毎のファイルを用意しています。  
+更新する場合は`assets/images/launcher`の画像を差し替えて下記コマンドを実行ください。
+
+```
+$ dart run flutter_launcher_icons
 ```
 
 ## 実行・ビルド方法
 
 開発環境の実行コマンド  
 ```console
-$ fvm flutter run --debug --dart-define=FLAVOR=dev
+$ fvm flutter run --debug --flavor dev --dart-define=FLAVOR=dev
 ```
   
 本番環境の実行コマンド
 ```console
-$ fvm flutter run --debug --dart-define=FLAVOR=prod
+$ fvm flutter run --debug --flavor prod --dart-define=FLAVOR=prod
 ```
 
 ビルドコマンド
 ```console
 # Android
-$ flutter build appbundle --release --dart-define=FLAVOR=prod
+$ flutter build appbundle --release --flavor prod --dart-define=FLAVOR=prod
 # iOS
-$ flutter build ipa --dart-define=FLAVOR=prod
+$ flutter build ipa --flavor prod --dart-define=FLAVOR=prod
 ```
 
 ## 構成図

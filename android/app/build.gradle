@@ -4,37 +4,6 @@ plugins {
     id "dev.flutter.flutter-gradle-plugin"
 }
 
-def localProperties = new Properties()
-def localPropertiesFile = rootProject.file('local.properties')
-if (localPropertiesFile.exists()) {
-    localPropertiesFile.withReader('UTF-8') { reader ->
-        localProperties.load(reader)
-    }
-}
-
-def flutterVersionCode = localProperties.getProperty('flutter.versionCode')
-if (flutterVersionCode == null) {
-    flutterVersionCode = '1'
-}
-
-def flutterVersionName = localProperties.getProperty('flutter.versionName')
-if (flutterVersionName == null) {
-    flutterVersionName = '1.0'
-}
-
-// dart-define を入れる変数を宣言する。
-// `Key: Value` 形式で初期値を設定することもできます
-def dartEnvironmentVariables = [:];
-if (project.hasProperty('dart-defines')) {
-    // カンマ区切りかつBase64でエンコードされている dart-defines をデコードして変数に格納します。
-    dartEnvironmentVariables = dartEnvironmentVariables + project.property('dart-defines')
-            .split(',')
-            .collectEntries { entry ->
-                def pair = new String(entry.decodeBase64(), 'UTF-8').split('=')
-                [(pair.first()): pair.last()]
-            }
-}
-
 android {
     namespace "jp.co.docodoor.app"
     compileSdkVersion flutter.compileSdkVersion
@@ -54,45 +23,34 @@ android {
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId "jp.co.docodoor.app"
-        // You can update the following values to match your application needs.
-        // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-build-configuration.
-        minSdkVersion 24
+        minSdkVersion flutter.minSdkVersion
         targetSdkVersion flutter.targetSdkVersion
-        versionCode flutterVersionCode.toInteger()
-        versionName flutterVersionName
-        
-        // ApplicationIDを環境ごとに変更
-        if (dartEnvironmentVariables.FLAVOR != 'prod') {
-            applicationIdSuffix ".${dartEnvironmentVariables.FLAVOR}"
-        }
-        // アプリ名を環境ごとに変更
-        resValue "string", "app_name", "アプリ名" +
-                (dartEnvironmentVariables.FLAVOR == 'prod' ? '' : ".${dartEnvironmentVariables.FLAVOR}")
+        versionCode flutter.versionCode
+        versionName flutter.versionName
     }
 
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig signingConfigs.debug
+        }
+    }
+
+    flavorDimensions += "flavor-type"
+    productFlavors {
+        create("dev") {
+            dimension = "flavor-type"
+            applicationIdSuffix = ".dev"
+            resValue "string", "app_name", "アプリ名.dev"
+        }
+        create("prod") {
+            dimension = "flavor-type"
+            applicationIdSuffix = ""
+            resValue "string", "app_name", "アプリ名"
         }
     }
 }
 
 flutter {
     source '../..'
-}
-
-dependencies {
-}
-
-task copySources(type: Copy) {
-   from "src/${dartEnvironmentVariables.FLAVOR}/res"
-   into 'src/main/res'
-}
-
-tasks.whenTaskAdded { task ->
-   task.dependsOn copySources
 }
