@@ -6,6 +6,9 @@
   "files.watcherExclude": {
     "**/.fvm": true
   },
+  "files.associations": {
+    "*.kts": "kotlin"
+  },
   "[dart]": {
     "editor.codeActionsOnSave": {
       "source.fixAll": "explicit",

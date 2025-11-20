@@ -199,6 +199,14 @@ Privacy Accessed API Reasons : CA92.1
 fvm と VSCode の利用を想定している。  
 VSCode 用の設定は追加済みである。
 
+**VSCode の設定**
+
+VSCode でKotlin/Gradle Kotlin DSLファイルを読み込むため
+VSCode の拡張機能で以下をインストール：
+
+- Kotlin
+- Gradle for Java
+
 **Flutter SDK**
 
 - バージョン管理ツール : [FVM](https://fvm.app/)
