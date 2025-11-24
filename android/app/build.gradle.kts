@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "jp.co.docodoor.app"
+    namespace = "work.sendfun.hackathon"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -21,7 +21,7 @@ android {
     sourceSets["main"].java.srcDirs("src/main/kotlin")
 
     defaultConfig {
-        applicationId = "jp.co.docodoor.app"
+        applicationId = "work.sendfun.hackathon"
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode

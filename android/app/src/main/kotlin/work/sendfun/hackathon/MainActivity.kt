@@ -1,4 +1,4 @@
-package jp.co.docodoor.app
+package work.sendfun.hackathon
 
 import io.flutter.embedding.android.FlutterActivity
 
