@@ -43,6 +43,17 @@ VSCode の拡張機能で以下をインストール：
 $ dart run flutter_launcher_icons
 ```
 
+### Firebase 設定
+
+Firebase は環境ごと（`dev`/`prod`）に分けて設定されています。  
+アプリID毎に環境分けをしていますが、実質的には同じFirebaseプロジェクト（`flutter-hackathon-2025`）を参照しています。
+
+- **設定ファイル**: `lib/config/firebase/{dev|prod}/firebase_options.dart`
+- **Android**: `android/app/src/{dev|prod}/google-services.json`
+- **iOS**: `ios/config/{dev|prod}/GoogleService-Info.plist`
+
+`lib/main.dart` の `initializeFirebaseApp()` で Flavor に応じて適切な設定を読み込みます。
+
 ## 実行・ビルド方法
 
 開発環境の実行コマンド

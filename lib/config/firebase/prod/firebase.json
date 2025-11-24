@@ -1,0 +1,30 @@
+{
+    "flutter": {
+        "platforms": {
+            "android": {
+                "default": {
+                    "projectId": "flutter-hackathon-2025",
+                    "appId": "1:996200238932:android:7d350c8a5d442739ee82c1",
+                    "fileOutput": "android/app/src/prod/google-services.json"
+                }
+            },
+            "ios": {
+                "default": {
+                    "projectId": "flutter-hackathon-2025",
+                    "appId": "1:996200238932:ios:f5c7cd5cc2c69679ee82c1",
+                    "uploadDebugSymbols": false,
+                    "fileOutput": "ios/config/prod/GoogleService-Info.plist"
+                }
+            },
+            "dart": {
+                "lib/config/firebase/prod/firebase_options.dart": {
+                    "projectId": "flutter-hackathon-2025",
+                    "configurations": {
+                        "android": "1:996200238932:android:7d350c8a5d442739ee82c1",
+                        "ios": "1:996200238932:ios:f5c7cd5cc2c69679ee82c1"
+                    }
+                }
+            }
+        }
+    }
+}
