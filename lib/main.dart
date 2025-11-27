@@ -1,13 +1,20 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+import 'config/firebase/dev/firebase_options.dart' as dev;
+import 'config/firebase/prod/firebase_options.dart' as prod;
 import 'config/theme/theme.dart';
 import 'enum/flavor.dart';
 import 'routing/go_router.dart';
 import 'util/logger.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await initializeFirebaseApp();
+
   // Flavor を取得し Logging
   logger.i('FLAVOR : ${flavor.name}');
 
@@ -37,4 +44,13 @@ class MyApp extends ConsumerWidget {
       },
     );
   }
+}
+
+Future<void> initializeFirebaseApp() async {
+  final firebaseOptions = switch (flavor) {
+    Flavor.prod => prod.DefaultFirebaseOptions.currentPlatform,
+    Flavor.dev => dev.DefaultFirebaseOptions.currentPlatform,
+  };
+  await Firebase.initializeApp(options: firebaseOptions);
+  logger.i('Firebase initialized : ${firebaseOptions.projectId}');
 }
