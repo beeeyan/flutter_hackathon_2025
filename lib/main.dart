@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+import 'auth/infra/auth_repository.dart';
 import 'config/firebase/dev/firebase_options.dart' as dev;
 import 'config/firebase/prod/firebase_options.dart' as prod;
 import 'config/theme/theme.dart';
@@ -14,6 +15,11 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await initializeFirebaseApp();
+
+  final container = ProviderContainer();
+
+  // 匿名認証でサインイン
+  await container.read(authRepositoryProvider).signInAnonymously();
 
   // Flavor を取得し Logging
   logger.i('FLAVOR : ${flavor.name}');
