@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
@@ -10,47 +9,108 @@ import '../../config/app_sizes.dart';
 import '../../routing/go_router.dart';
 import '../../widgets/app_filled_button.dart';
 import '../../widgets/app_profile_icon.dart';
+import '../auth/application/state/auth_state.dart';
+import '../session/domain/member.dart';
+import '../session/provider/member_provider.dart';
+import '../session/provider/session_provider.dart';
 
-class RoomLobbyPage extends HookConsumerWidget {
-  const RoomLobbyPage({super.key});
+class RoomLobbyPage extends ConsumerWidget {
+  const RoomLobbyPage({
+    super.key,
+    required this.qrCode,
+  });
+
+  final String qrCode;
 
   static const name = 'room_lobby';
   static const path = '/room_lobby';
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // TODO: ホストかゲストかを判定する処理を追加
-    final isHost = useState(true); // 仮の値
-    // TODO: ルームIDを実際のデータから取得
-    const roomId = 'RM4394';
-    // TODO: 参加者一覧をFirestoreから取得
-    final participants = useState<List<Participant>>([
-      const Participant(
-        name: '自分',
-        bio: '今日はよろしくお願いします!',
-        iconUrl: 'https://i.pravatar.cc/150?img=1',
-        isMe: true,
-      ),
-      const Participant(
-        name: 'ハナコ',
-        bio: 'お酒好きです',
-        iconUrl: 'https://i.pravatar.cc/150?img=2',
-        isMe: false,
-      ),
-      const Participant(
-        name: 'ケン',
-        bio: '趣味はキャンプ',
-        iconUrl: 'https://i.pravatar.cc/150?img=3',
-        isMe: false,
-      ),
-      const Participant(
-        name: 'ユウキ',
-        bio: '遅れてすみません',
-        iconUrl: 'https://i.pravatar.cc/150?img=4',
-        isMe: false,
-      ),
-    ]);
+    // 現在のユーザー認証状態を取得
+    final authState = ref.watch(authStateProvider);
+    final currentUserId = authState.value?.uid;
 
+    // セッション情報を監視
+    final sessionAsync = ref.watch(watchSessionProvider(qrCode));
+
+    return sessionAsync.when(
+      data: (session) {
+        if (session == null) {
+          return Scaffold(
+            appBar: AppBar(title: const Text('エラー')),
+            body: const Center(
+              child: Text('セッションが見つかりません'),
+            ),
+          );
+        }
+
+        // ホストかどうかを判定（現在のユーザーIDとセッションのhostUidを比較）
+        final isHost = session.hostUid == currentUserId;
+
+        // アクティブなメンバー一覧を監視
+        final activeMembersAsync = ref.watch(
+          watchActiveSessionMembersProvider(session.id!),
+        );
+
+        return activeMembersAsync.when(
+          data: (members) => _buildLobbyContent(
+            context,
+            ref,
+            session.qrCode,
+            members,
+            isHost,
+            currentUserId ?? '',
+          ),
+          loading: _buildLoadingScaffold,
+          error: (error, stackTrace) => _buildErrorScaffold(
+            error.toString(),
+            context,
+          ),
+        );
+      },
+      loading: _buildLoadingScaffold,
+      error: (error, stackTrace) =>
+          _buildErrorScaffold(error.toString(), context),
+    );
+  }
+
+  Widget _buildLoadingScaffold() {
+    return Scaffold(
+      appBar: AppBar(title: const Text('読み込み中...')),
+      body: const Center(child: CircularProgressIndicator()),
+    );
+  }
+
+  Widget _buildErrorScaffold(String error, BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('エラー')),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text('エラーが発生しました: $error'),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () {
+                const HomePageRoute().go(context);
+              },
+              child: const Text('ホームに戻る'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLobbyContent(
+    BuildContext context,
+    WidgetRef ref,
+    String roomId,
+    List<Member> members,
+    bool isHost,
+    String myUid,
+  ) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('待機中...'),
@@ -103,7 +163,7 @@ class RoomLobbyPage extends HookConsumerWidget {
                       // ルームID表示とコピーボタン
                       GestureDetector(
                         onTap: () {
-                          Clipboard.setData(const ClipboardData(text: roomId));
+                          Clipboard.setData(ClipboardData(text: roomId));
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
                               content: Text('コピーしました'),
@@ -172,7 +232,7 @@ class RoomLobbyPage extends HookConsumerWidget {
                       Align(
                         alignment: Alignment.centerLeft,
                         child: Text(
-                          '参加者 (${participants.value.length}人)',
+                          '参加者 (${members.length}人)',
                           style: TextStyle(
                             fontSize: 14.sp,
                             color: Colors.grey,
@@ -181,16 +241,15 @@ class RoomLobbyPage extends HookConsumerWidget {
                       ),
                       AppGaps.g16,
                       // 参加者リスト
-                      ...participants.value.map(
-                        (participant) {
+                      ...members.map(
+                        (Member member) {
+                          final isMe = member.uid == myUid;
                           return Padding(
                             padding: const EdgeInsets.only(bottom: 12),
                             child: Container(
                               padding: const EdgeInsets.all(12),
                               decoration: BoxDecoration(
-                                color: participant.isMe
-                                    ? Colors.grey.shade100
-                                    : null,
+                                color: isMe ? Colors.grey.shade100 : null,
                                 borderRadius: BorderRadius.circular(12),
                                 border: Border.all(
                                   color: Colors.grey.shade300,
@@ -199,7 +258,7 @@ class RoomLobbyPage extends HookConsumerWidget {
                               child: Row(
                                 children: [
                                   AppProfileIcon(
-                                    imageUrl: participant.iconUrl,
+                                    imageUrl: member.iconUrl,
                                     size: 48.w,
                                   ),
                                   const SizedBox(width: 12),
@@ -211,14 +270,14 @@ class RoomLobbyPage extends HookConsumerWidget {
                                         Row(
                                           children: [
                                             Text(
-                                              participant.name,
+                                              member.nickname,
                                               style: TextStyle(
                                                 fontSize: 16.sp,
                                                 fontWeight: FontWeight.bold,
                                                 color: Colors.black,
                                               ),
                                             ),
-                                            if (participant.isMe) ...[
+                                            if (isMe) ...[
                                               const SizedBox(
                                                 width: AppSizes.s8,
                                               ),
@@ -249,7 +308,7 @@ class RoomLobbyPage extends HookConsumerWidget {
                                         ),
                                         const SizedBox(height: AppSizes.s4),
                                         Text(
-                                          participant.bio,
+                                          member.bio,
                                           style: TextStyle(
                                             fontSize: 14.sp,
                                             color: Colors.grey.shade700,
@@ -290,7 +349,7 @@ class RoomLobbyPage extends HookConsumerWidget {
                 ],
               ),
               child: SafeArea(
-                child: isHost.value
+                child: isHost
                     ? AppFilledButton(
                         onPressed: () {
                           const VotingPageRoute().go(context);
@@ -336,19 +395,4 @@ class RoomLobbyPage extends HookConsumerWidget {
       ),
     );
   }
-}
-
-// 参加者データのモデル（仮実装）
-class Participant {
-  const Participant({
-    required this.name,
-    required this.bio,
-    required this.iconUrl,
-    required this.isMe,
-  });
-
-  final String name;
-  final String bio;
-  final String iconUrl;
-  final bool isMe;
 }

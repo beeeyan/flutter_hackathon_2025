@@ -96,17 +96,20 @@ mixin $JoinRoomPageRoute on GoRouteData {
 }
 
 RouteBase get $roomLobbyPageRoute => GoRouteData.$route(
-  path: '/room_lobby',
+  path: '/room_lobby/:qrCode',
   name: 'room_lobby',
   factory: $RoomLobbyPageRoute._fromState,
 );
 
 mixin $RoomLobbyPageRoute on GoRouteData {
   static RoomLobbyPageRoute _fromState(GoRouterState state) =>
-      const RoomLobbyPageRoute();
+      RoomLobbyPageRoute(qrCode: state.pathParameters['qrCode']!);
+
+  RoomLobbyPageRoute get _self => this as RoomLobbyPageRoute;
 
   @override
-  String get location => GoRouteData.$location('/room_lobby');
+  String get location =>
+      GoRouteData.$location('/room_lobby/${Uri.encodeComponent(_self.qrCode)}');
 
   @override
   void go(BuildContext context) => context.go(location);

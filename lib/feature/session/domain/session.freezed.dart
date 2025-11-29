@@ -16,7 +16,7 @@ T _$identity<T>(T value) => value;
 mixin _$Session {
 
  String? get id;// Firestoreドキュメントのid
- String? get name; String get hostUid; String get qrCode; String get status;@TimestampConverter() DateTime get joinedAt;@TimestampConverter() DateTime get lastActiveAt;
+ String? get name; String get hostUid; String get qrCode; String get status;@TimestampConverter() DateTime get createdAt;@TimestampConverter() DateTime get updatedAt;
 /// Create a copy of Session
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -29,16 +29,16 @@ $SessionCopyWith<Session> get copyWith => _$SessionCopyWithImpl<Session>(this as
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Session&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.hostUid, hostUid) || other.hostUid == hostUid)&&(identical(other.qrCode, qrCode) || other.qrCode == qrCode)&&(identical(other.status, status) || other.status == status)&&(identical(other.joinedAt, joinedAt) || other.joinedAt == joinedAt)&&(identical(other.lastActiveAt, lastActiveAt) || other.lastActiveAt == lastActiveAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Session&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.hostUid, hostUid) || other.hostUid == hostUid)&&(identical(other.qrCode, qrCode) || other.qrCode == qrCode)&&(identical(other.status, status) || other.status == status)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,name,hostUid,qrCode,status,joinedAt,lastActiveAt);
+int get hashCode => Object.hash(runtimeType,id,name,hostUid,qrCode,status,createdAt,updatedAt);
 
 @override
 String toString() {
-  return 'Session(id: $id, name: $name, hostUid: $hostUid, qrCode: $qrCode, status: $status, joinedAt: $joinedAt, lastActiveAt: $lastActiveAt)';
+  return 'Session(id: $id, name: $name, hostUid: $hostUid, qrCode: $qrCode, status: $status, createdAt: $createdAt, updatedAt: $updatedAt)';
 }
 
 
@@ -49,7 +49,7 @@ abstract mixin class $SessionCopyWith<$Res>  {
   factory $SessionCopyWith(Session value, $Res Function(Session) _then) = _$SessionCopyWithImpl;
 @useResult
 $Res call({
- String? id, String? name, String hostUid, String qrCode, String status,@TimestampConverter() DateTime joinedAt,@TimestampConverter() DateTime lastActiveAt
+ String? id, String? name, String hostUid, String qrCode, String status,@TimestampConverter() DateTime createdAt,@TimestampConverter() DateTime updatedAt
 });
 
 
@@ -66,15 +66,15 @@ class _$SessionCopyWithImpl<$Res>
 
 /// Create a copy of Session
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = freezed,Object? name = freezed,Object? hostUid = null,Object? qrCode = null,Object? status = null,Object? joinedAt = null,Object? lastActiveAt = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = freezed,Object? name = freezed,Object? hostUid = null,Object? qrCode = null,Object? status = null,Object? createdAt = null,Object? updatedAt = null,}) {
   return _then(_self.copyWith(
 id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String?,name: freezed == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String?,hostUid: null == hostUid ? _self.hostUid : hostUid // ignore: cast_nullable_to_non_nullable
 as String,qrCode: null == qrCode ? _self.qrCode : qrCode // ignore: cast_nullable_to_non_nullable
 as String,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
-as String,joinedAt: null == joinedAt ? _self.joinedAt : joinedAt // ignore: cast_nullable_to_non_nullable
-as DateTime,lastActiveAt: null == lastActiveAt ? _self.lastActiveAt : lastActiveAt // ignore: cast_nullable_to_non_nullable
+as String,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
+as DateTime,updatedAt: null == updatedAt ? _self.updatedAt : updatedAt // ignore: cast_nullable_to_non_nullable
 as DateTime,
   ));
 }
@@ -160,10 +160,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String? id,  String? name,  String hostUid,  String qrCode,  String status, @TimestampConverter()  DateTime joinedAt, @TimestampConverter()  DateTime lastActiveAt)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String? id,  String? name,  String hostUid,  String qrCode,  String status, @TimestampConverter()  DateTime createdAt, @TimestampConverter()  DateTime updatedAt)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Session() when $default != null:
-return $default(_that.id,_that.name,_that.hostUid,_that.qrCode,_that.status,_that.joinedAt,_that.lastActiveAt);case _:
+return $default(_that.id,_that.name,_that.hostUid,_that.qrCode,_that.status,_that.createdAt,_that.updatedAt);case _:
   return orElse();
 
 }
@@ -181,10 +181,10 @@ return $default(_that.id,_that.name,_that.hostUid,_that.qrCode,_that.status,_tha
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String? id,  String? name,  String hostUid,  String qrCode,  String status, @TimestampConverter()  DateTime joinedAt, @TimestampConverter()  DateTime lastActiveAt)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String? id,  String? name,  String hostUid,  String qrCode,  String status, @TimestampConverter()  DateTime createdAt, @TimestampConverter()  DateTime updatedAt)  $default,) {final _that = this;
 switch (_that) {
 case _Session():
-return $default(_that.id,_that.name,_that.hostUid,_that.qrCode,_that.status,_that.joinedAt,_that.lastActiveAt);case _:
+return $default(_that.id,_that.name,_that.hostUid,_that.qrCode,_that.status,_that.createdAt,_that.updatedAt);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -201,10 +201,10 @@ return $default(_that.id,_that.name,_that.hostUid,_that.qrCode,_that.status,_tha
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String? id,  String? name,  String hostUid,  String qrCode,  String status, @TimestampConverter()  DateTime joinedAt, @TimestampConverter()  DateTime lastActiveAt)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String? id,  String? name,  String hostUid,  String qrCode,  String status, @TimestampConverter()  DateTime createdAt, @TimestampConverter()  DateTime updatedAt)?  $default,) {final _that = this;
 switch (_that) {
 case _Session() when $default != null:
-return $default(_that.id,_that.name,_that.hostUid,_that.qrCode,_that.status,_that.joinedAt,_that.lastActiveAt);case _:
+return $default(_that.id,_that.name,_that.hostUid,_that.qrCode,_that.status,_that.createdAt,_that.updatedAt);case _:
   return null;
 
 }
@@ -216,7 +216,7 @@ return $default(_that.id,_that.name,_that.hostUid,_that.qrCode,_that.status,_tha
 @JsonSerializable()
 
 class _Session implements Session {
-  const _Session({this.id, this.name, required this.hostUid, required this.qrCode, this.status = 'waiting', @TimestampConverter() required this.joinedAt, @TimestampConverter() required this.lastActiveAt});
+  const _Session({this.id, this.name, required this.hostUid, required this.qrCode, this.status = 'waiting', @TimestampConverter() required this.createdAt, @TimestampConverter() required this.updatedAt});
   factory _Session.fromJson(Map<String, dynamic> json) => _$SessionFromJson(json);
 
 @override final  String? id;
@@ -225,8 +225,8 @@ class _Session implements Session {
 @override final  String hostUid;
 @override final  String qrCode;
 @override@JsonKey() final  String status;
-@override@TimestampConverter() final  DateTime joinedAt;
-@override@TimestampConverter() final  DateTime lastActiveAt;
+@override@TimestampConverter() final  DateTime createdAt;
+@override@TimestampConverter() final  DateTime updatedAt;
 
 /// Create a copy of Session
 /// with the given fields replaced by the non-null parameter values.
@@ -241,16 +241,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Session&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.hostUid, hostUid) || other.hostUid == hostUid)&&(identical(other.qrCode, qrCode) || other.qrCode == qrCode)&&(identical(other.status, status) || other.status == status)&&(identical(other.joinedAt, joinedAt) || other.joinedAt == joinedAt)&&(identical(other.lastActiveAt, lastActiveAt) || other.lastActiveAt == lastActiveAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Session&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.hostUid, hostUid) || other.hostUid == hostUid)&&(identical(other.qrCode, qrCode) || other.qrCode == qrCode)&&(identical(other.status, status) || other.status == status)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,name,hostUid,qrCode,status,joinedAt,lastActiveAt);
+int get hashCode => Object.hash(runtimeType,id,name,hostUid,qrCode,status,createdAt,updatedAt);
 
 @override
 String toString() {
-  return 'Session(id: $id, name: $name, hostUid: $hostUid, qrCode: $qrCode, status: $status, joinedAt: $joinedAt, lastActiveAt: $lastActiveAt)';
+  return 'Session(id: $id, name: $name, hostUid: $hostUid, qrCode: $qrCode, status: $status, createdAt: $createdAt, updatedAt: $updatedAt)';
 }
 
 
@@ -261,7 +261,7 @@ abstract mixin class _$SessionCopyWith<$Res> implements $SessionCopyWith<$Res> {
   factory _$SessionCopyWith(_Session value, $Res Function(_Session) _then) = __$SessionCopyWithImpl;
 @override @useResult
 $Res call({
- String? id, String? name, String hostUid, String qrCode, String status,@TimestampConverter() DateTime joinedAt,@TimestampConverter() DateTime lastActiveAt
+ String? id, String? name, String hostUid, String qrCode, String status,@TimestampConverter() DateTime createdAt,@TimestampConverter() DateTime updatedAt
 });
 
 
@@ -278,15 +278,15 @@ class __$SessionCopyWithImpl<$Res>
 
 /// Create a copy of Session
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = freezed,Object? name = freezed,Object? hostUid = null,Object? qrCode = null,Object? status = null,Object? joinedAt = null,Object? lastActiveAt = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = freezed,Object? name = freezed,Object? hostUid = null,Object? qrCode = null,Object? status = null,Object? createdAt = null,Object? updatedAt = null,}) {
   return _then(_Session(
 id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String?,name: freezed == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String?,hostUid: null == hostUid ? _self.hostUid : hostUid // ignore: cast_nullable_to_non_nullable
 as String,qrCode: null == qrCode ? _self.qrCode : qrCode // ignore: cast_nullable_to_non_nullable
 as String,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
-as String,joinedAt: null == joinedAt ? _self.joinedAt : joinedAt // ignore: cast_nullable_to_non_nullable
-as DateTime,lastActiveAt: null == lastActiveAt ? _self.lastActiveAt : lastActiveAt // ignore: cast_nullable_to_non_nullable
+as String,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
+as DateTime,updatedAt: null == updatedAt ? _self.updatedAt : updatedAt // ignore: cast_nullable_to_non_nullable
 as DateTime,
   ));
 }
