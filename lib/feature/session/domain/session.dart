@@ -15,8 +15,8 @@ abstract class Session with _$Session {
     required String hostUid,
     required String qrCode,
     @Default('waiting') String status,
-    @TimestampConverter() required DateTime joinedAt,
-    @TimestampConverter() required DateTime lastActiveAt,
+    @TimestampConverter() required DateTime createdAt,
+    @TimestampConverter() required DateTime updatedAt,
   }) = _Session;
 
   factory Session.fromJson(Map<String, dynamic> json) => _$SessionFromJson(json);

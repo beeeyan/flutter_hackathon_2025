@@ -38,8 +38,8 @@ class SessionRepository {
         name: sessionName,
         hostUid: user.uid,
         qrCode: qrCode,
-        joinedAt: now,
-        lastActiveAt: now,
+        createdAt: now,
+        updatedAt: now,
       );
 
       // Firestoreに保存
@@ -99,6 +99,7 @@ class SessionRepository {
 
       await _firestore.collection('sessions').doc(session!.id).update({
         'status': 'active',
+        'updatedAt': DateTime.now(),
       });
       
       debugPrint('Session started successfully: ${session.id}');
@@ -134,6 +135,7 @@ class SessionRepository {
 
       await _firestore.collection('sessions').doc(session.id).update({
         'status': 'result',
+        'updatedAt': DateTime.now(),
       });
       
       debugPrint('Session ended successfully: ${session.id}');
@@ -187,6 +189,7 @@ class SessionRepository {
 
       await _firestore.collection('sessions').doc(session!.id).update({
         'name': name,
+        'updatedAt': DateTime.now(),
       });
       
       debugPrint('Session name updated successfully: ${session.id}');

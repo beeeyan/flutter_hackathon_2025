@@ -12,9 +12,11 @@ _Session _$SessionFromJson(Map<String, dynamic> json) => _Session(
   hostUid: json['hostUid'] as String,
   qrCode: json['qrCode'] as String,
   status: json['status'] as String? ?? 'waiting',
-  joinedAt: const TimestampConverter().fromJson(json['joinedAt'] as Timestamp),
-  lastActiveAt: const TimestampConverter().fromJson(
-    json['lastActiveAt'] as Timestamp,
+  createdAt: const TimestampConverter().fromJson(
+    json['createdAt'] as Timestamp,
+  ),
+  updatedAt: const TimestampConverter().fromJson(
+    json['updatedAt'] as Timestamp,
   ),
 );
 
@@ -24,6 +26,6 @@ Map<String, dynamic> _$SessionToJson(_Session instance) => <String, dynamic>{
   'hostUid': instance.hostUid,
   'qrCode': instance.qrCode,
   'status': instance.status,
-  'joinedAt': const TimestampConverter().toJson(instance.joinedAt),
-  'lastActiveAt': const TimestampConverter().toJson(instance.lastActiveAt),
+  'createdAt': const TimestampConverter().toJson(instance.createdAt),
+  'updatedAt': const TimestampConverter().toJson(instance.updatedAt),
 };

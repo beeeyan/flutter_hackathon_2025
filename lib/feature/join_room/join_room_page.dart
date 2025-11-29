@@ -7,6 +7,9 @@ import '../../config/app_sizes.dart';
 import '../../routing/go_router.dart';
 import '../../widgets/app_filled_button.dart';
 import '../../widgets/app_text_form_field.dart';
+import '../session/infra/session_repository.dart';
+import '../session/provider/member_provider.dart';
+import '../user/application/state/current_user_provider.dart';
 
 class JoinRoomPage extends HookConsumerWidget {
   const JoinRoomPage({super.key});
@@ -47,14 +50,14 @@ class JoinRoomPage extends HookConsumerWidget {
                       child: Stack(
                         children: [
                           MobileScanner(
-                            controller: scannerController,
-                            onDetect: (capture) {
+                            controller: scannerController,                            onDetect: (capture) async {
                               final barcodes = capture.barcodes;
                               for (final barcode in barcodes) {
                                 if (barcode.rawValue != null) {
                                   // QRコードが検出されたときの処理
-                                  roomIdController.text = barcode.rawValue!;
-                                  const RoomLobbyPageRoute().go(context);
+                                  final qrCode = barcode.rawValue!;
+                                  roomIdController.text = qrCode;
+                                  await _joinSession(context, ref, qrCode);
                                 }
                               }
                             },
@@ -116,8 +119,9 @@ class JoinRoomPage extends HookConsumerWidget {
                   // この部屋に入るボタン
                   AppFilledButton(
                     onPressed: roomIdController.text.isNotEmpty
-                        ? () {
-                            const RoomLobbyPageRoute().go(context);
+                        ? () async {
+                            final qrCode = roomIdController.text;
+                            await _joinSession(context, ref, qrCode);
                           }
                         : null,
                     text: 'この部屋に入る',
@@ -131,6 +135,54 @@ class JoinRoomPage extends HookConsumerWidget {
         ),
       ),
     );
+  }
+
+  /// セッション参加処理
+  Future<void> _joinSession(BuildContext context, WidgetRef ref, String qrCode) async {
+    try {
+      // 現在のユーザー情報を取得
+      final currentUser = await ref.read(currentUserProvider.future);
+      if (currentUser == null) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('ユーザー情報が見つかりません')),
+          );
+        }
+        return;
+      }
+
+      // QRコードからセッション情報を取得
+      final sessionRepository = ref.read(sessionRepositoryProvider);
+      final session = await sessionRepository.getSessionByQRCode(qrCode);
+      if (session == null) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('セッションが見つかりません')),
+          );
+        }
+        return;
+      }
+
+      // セッションに参加
+      final memberController = ref.read(memberControllerProvider);
+      await memberController.joinSession(
+        sessionId: session.id!, // QRコードから取得したセッションIDを使用
+        iconUrl: currentUser.iconUrl,
+        nickname: currentUser.nickname,
+        bio: currentUser.bio,
+      );
+
+      // 参加成功後、ルームロビーに遷移
+      if (context.mounted) {
+        RoomLobbyPageRoute(qrCode: qrCode).go(context);
+      }
+    } on Exception catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('セッション参加に失敗しました: $e')),
+        );
+      }
+    }
   }
 }
 

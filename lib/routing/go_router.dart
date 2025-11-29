@@ -83,15 +83,17 @@ class JoinRoomPageRoute extends GoRouteData with $JoinRoomPageRoute {
 }
 
 @TypedGoRoute<RoomLobbyPageRoute>(
-  path: RoomLobbyPage.path,
+  path: '${RoomLobbyPage.path}/:qrCode',
   name: RoomLobbyPage.name,
 )
 class RoomLobbyPageRoute extends GoRouteData with $RoomLobbyPageRoute {
-  const RoomLobbyPageRoute();
+  const RoomLobbyPageRoute({required this.qrCode});
+
+  final String qrCode;
 
   @override
   Page<void> buildPage(BuildContext context, GoRouterState state) {
-    return buildNoAnimationTransition(const RoomLobbyPage());
+    return buildNoAnimationTransition(RoomLobbyPage(qrCode: qrCode));
   }
 }
 

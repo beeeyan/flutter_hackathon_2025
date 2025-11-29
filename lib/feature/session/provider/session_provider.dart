@@ -133,7 +133,7 @@ final sessionControllerProvider = Provider<SessionController>((ref) {
 class SessionController {
   SessionController(this._ref);
 
-  final ProviderRef<SessionController> _ref;
+  final Ref _ref;
 
   /// QRコード発行
   Future<Session> issueQRCode({String? sessionName}) async {

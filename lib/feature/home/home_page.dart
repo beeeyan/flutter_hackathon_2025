@@ -7,6 +7,8 @@ import '../../config/app_sizes.dart';
 import '../../routing/go_router.dart';
 import '../../widgets/app_filled_button.dart';
 import '../../widgets/app_profile_icon.dart';
+import '../session/provider/member_provider.dart';
+import '../session/provider/session_provider.dart';
 import '../user/application/state/current_user_provider.dart';
 
 class HomePage extends ConsumerWidget {
@@ -94,9 +96,49 @@ class HomePage extends ConsumerWidget {
                   padding: EdgeInsets.all(24.w),
                   child: Column(
                     children: [
-                      AppFilledButton(
-                        onPressed: () {
-                          const RoomLobbyPageRoute().push<void>(context);
+                      AppFilledButton(                        onPressed: () async {
+                          try {
+                            final controller = ref.read(
+                              sessionControllerProvider,
+                            );
+                            // セッションを作成してQRコードを取得
+                            final session = await controller.issueQRCode();
+                            
+                            // 現在のユーザー情報を取得
+                            final currentUser = await ref.read(currentUserProvider.future);
+                            if (currentUser == null) {
+                              if (context.mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(content: Text('ユーザー情報が見つかりません')),
+                                );
+                              }
+                              return;
+                            }
+                            
+                            // 自分自身をホストとしてセッションに追加
+                            final memberController = ref.read(memberControllerProvider);
+                            await memberController.joinSession(
+                              sessionId: session.id!,
+                              iconUrl: currentUser.iconUrl,
+                              nickname: currentUser.nickname,
+                              bio: currentUser.bio,
+                              role: 'host', // ホストとして追加
+                            );
+                            
+                            if (context.mounted) {
+                              await RoomLobbyPageRoute(
+                                qrCode: session.qrCode,
+                              ).push<void>(
+                                context,
+                              );
+                            }
+                          } on Exception catch (e) {
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text('エラーが発生しました: $e')),
+                              );
+                            }
+                          }
                         },
                         leading: Icon(
                           Symbols.group,
