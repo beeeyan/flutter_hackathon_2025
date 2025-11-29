@@ -115,30 +115,11 @@ class RoomLobbyPage extends ConsumerWidget with PageMixin {
     return Scaffold(
       appBar: AppBar(
         title: const Text('待機中...'),
-        // 右側に退出ボタンを追加
+        // ゲストの場合のみ退出ボタンを表示
         actions: [
-          IconButton(
-            onPressed: () async {
-              // 確認ダイアログを表示
-              final shouldLeave = await showDialog<bool>(
-                context: context,
-                builder: (context) => AlertDialog(
-                  title: const Text('退出確認'),
-                  content: const Text('このセッションから退出しますか？'),
-                  actions: [
-                    TextButton(
-                      onPressed: () => Navigator.of(context).pop(false),
-                      child: const Text('キャンセル'),
-                    ),
-                    TextButton(
-                      onPressed: () => Navigator.of(context).pop(true),
-                      child: const Text('退出する'),
-                    ),
-                  ],
-                ),
-              );
-
-              if (shouldLeave == true && context.mounted) {
+          if (!isHost)
+            IconButton(
+              onPressed: () async {
                 await execute(
                   context,
                   ref,
@@ -166,10 +147,9 @@ class RoomLobbyPage extends ConsumerWidget with PageMixin {
                     }
                   },
                 );
-              }
-            },
-            icon: const Icon(Icons.exit_to_app),
-          ),
+              },
+              icon: const Icon(Icons.exit_to_app),
+            ),
         ],
       ),
       body: Stack(
