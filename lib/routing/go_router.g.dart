@@ -15,20 +15,17 @@ RouteBase get $rootShellRoute => ShellRouteData.$route(
     GoRouteData.$route(
       path: '/home',
       name: 'home',
-
-      factory: $MyHomePageRouteExtension._fromState,
+      factory: $MyHomePageRoute._fromState,
     ),
     GoRouteData.$route(
       path: '/sample1',
       name: 'sample1',
-
-      factory: $Sample1PageRouteExtension._fromState,
+      factory: $Sample1PageRoute._fromState,
     ),
     GoRouteData.$route(
       path: '/sample2',
       name: 'sample2',
-
-      factory: $Sample2PageRouteExtension._fromState,
+      factory: $Sample2PageRoute._fromState,
     ),
   ],
 );
@@ -38,50 +35,65 @@ extension $RootShellRouteExtension on RootShellRoute {
       const RootShellRoute();
 }
 
-extension $MyHomePageRouteExtension on MyHomePageRoute {
+mixin $MyHomePageRoute on GoRouteData {
   static MyHomePageRoute _fromState(GoRouterState state) =>
       const MyHomePageRoute();
 
+  @override
   String get location => GoRouteData.$location('/home');
 
+  @override
   void go(BuildContext context) => context.go(location);
 
+  @override
   Future<T?> push<T>(BuildContext context) => context.push<T>(location);
 
+  @override
   void pushReplacement(BuildContext context) =>
       context.pushReplacement(location);
 
+  @override
   void replace(BuildContext context) => context.replace(location);
 }
 
-extension $Sample1PageRouteExtension on Sample1PageRoute {
+mixin $Sample1PageRoute on GoRouteData {
   static Sample1PageRoute _fromState(GoRouterState state) =>
       const Sample1PageRoute();
 
+  @override
   String get location => GoRouteData.$location('/sample1');
 
+  @override
   void go(BuildContext context) => context.go(location);
 
+  @override
   Future<T?> push<T>(BuildContext context) => context.push<T>(location);
 
+  @override
   void pushReplacement(BuildContext context) =>
       context.pushReplacement(location);
 
+  @override
   void replace(BuildContext context) => context.replace(location);
 }
 
-extension $Sample2PageRouteExtension on Sample2PageRoute {
+mixin $Sample2PageRoute on GoRouteData {
   static Sample2PageRoute _fromState(GoRouterState state) =>
       const Sample2PageRoute();
 
+  @override
   String get location => GoRouteData.$location('/sample2');
 
+  @override
   void go(BuildContext context) => context.go(location);
 
+  @override
   Future<T?> push<T>(BuildContext context) => context.push<T>(location);
 
+  @override
   void pushReplacement(BuildContext context) =>
       context.pushReplacement(location);
 
+  @override
   void replace(BuildContext context) => context.replace(location);
 }

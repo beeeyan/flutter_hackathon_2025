@@ -19,11 +19,11 @@ sessions/{sessionId}/members/{uid}   # セッション参加メンバー
 
 ```json
 {
-  "iconUrl": "https://.../avatar.png",  // プロフィール画像URL
-  "nickname": "たろう",                    // ニックネーム
-  "bio": "よろしく！",                     // 一言コメント（自己紹介）
-  "createdAt": "<serverTimestamp>",     // 作成日時
-  "updatedAt": "<serverTimestamp>"      // 更新日時
+  "iconUrl": "https://.../avatar.png",      // プロフィール画像URL（デ
+  "nickname": "たろう",                       // ニックネーム
+  "bio": "よろしく！",                        // 一言コメント（自己紹介）
+  "createdAt": "<serverTimestamp>",         // 作成日時
+  "updatedAt": "<serverTimestamp>"          // 更新日時
 }
 ```
 
@@ -37,14 +37,18 @@ sessions/{sessionId}/members/{uid}   # セッション参加メンバー
 {
   "name": "11/29 青山カフェ会",         // セッション名（最初は指定不要）
   "hostUid": "uid_host",              // ホストのUID
-  "qrCode": "SES-ABCD-1234",          // QRコード値
-  "startAt": "<Timestamp>",           // 開始時刻（null で未開始）
-  "endAt": "<Timestamp>",             // 終了時刻
-  "status": "open|closed",            // セッション状態
+  "qrCode": "SES-ABCD-1234",          // QRコード値(テキスト入力する場合を考えてある程度入力しやすいものを採番する) 
+  "status": "waiting|active|result",  // セッション状態
   "createdAt": "<serverTimestamp>",   // 作成日時
   "updatedAt": "<serverTimestamp>"    // 更新日時
 }
 ```
+
+waiting : 投票が始まっていない状態
+active : 投票中の状態
+result : 結果表示中の状態
+  
+タイマーは、各端末で計測する。
 
 ### sessions/{sessionId}/members サブコレクション
 
@@ -71,9 +75,18 @@ sessions/{sessionId}/members/{uid}   # セッション参加メンバー
     "uid_AAA": 10,                     // Aさん → この人 へ 10タップ
     "uid_BBB": 5,                      // Bさん → この人 へ 5タップ
     "uid_CCC": 9                       // Cさん → この人 へ 9タップ
+  },
+
+  "Sended": {
+    "uid_AAA": 10,                     // この人 → Aさん へ 10タップ
+    "uid_BBB": 5,                      // この人 → Bさん へ 5タップ
+    "uid_CCC": 9                       // この人 → Cさん へ 9タップ
   }
+
 }
 ```
+
+※ bySenderとSended両方あるのは、マッチングの処理を簡単にするため　　
 
 ### データフロー
 
@@ -82,16 +95,20 @@ sessions/{sessionId}/members/{uid}   # セッション参加メンバー
 
 2. **QRコード発行**
    - `sessions/{sessionId}` にデータ作成
-   - `startAt`: `null`
-   - `status`: `"closed"`
+   - `status`: `"waiting"`
 
 3. **QRコード読み込み**
    - `sessions/{sessionId}/members/{uid}` にデータ作成
 
 4. **開始ボタン押下**
    - `sessions/{sessionId}` を更新
-   - `startAt`: 開始時の時間
-   - `status`: `"open"`
+   - `status`: `"active"`
 
 5. **アイコンタップ**
-   - `sessions/{sessionId}/members/{targetUid}` の `bySender` データを更新
+   - `sessions/{sessionId}/members/{targetUid}` の 
+   アイコンに表示されている人の`bySender`と  
+   自分の`sended`を更新する
+
+6. **ホストが終了ボタン押下**
+   - `sessions/{sessionId}` を更新
+   - `status`: `"result"`

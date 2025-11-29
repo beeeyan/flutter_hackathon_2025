@@ -50,7 +50,7 @@ class RootShellRoute extends ShellRouteData {
   }
 }
 
-class MyHomePageRoute extends GoRouteData {
+class MyHomePageRoute extends GoRouteData with $MyHomePageRoute {
   const MyHomePageRoute();
 
   @override
@@ -59,7 +59,7 @@ class MyHomePageRoute extends GoRouteData {
   }
 }
 
-class Sample1PageRoute extends GoRouteData {
+class Sample1PageRoute extends GoRouteData with $Sample1PageRoute {
   const Sample1PageRoute();
 
   @override
@@ -68,7 +68,7 @@ class Sample1PageRoute extends GoRouteData {
   }
 }
 
-class Sample2PageRoute extends GoRouteData {
+class Sample2PageRoute extends GoRouteData with $Sample2PageRoute {
   const Sample2PageRoute();
 
   @override
