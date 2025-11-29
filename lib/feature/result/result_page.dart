@@ -5,6 +5,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
 import '../../config/app_sizes.dart';
+import '../../config/theme/theme_extension.dart';
 import '../../routing/go_router.dart';
 import '../../widgets/app_outlined_button.dart';
 import '../../widgets/app_profile_icon.dart';
@@ -26,7 +27,7 @@ class ResultPage extends HookConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('結果発表'),
+        title: const Text('運命の結果'),
       ),
       body: isMatch.value
           ? _buildMatchBody(context, matchedUserName, matchedUserIconUrl)
@@ -39,6 +40,8 @@ class ResultPage extends HookConsumerWidget {
     String matchedUserName,
     String matchedUserIconUrl,
   ) {
+    final appColors = Theme.of(context).appColors;
+    final appTextStyles = Theme.of(context).appTextStyles;
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: AppSizes.s24),
@@ -57,17 +60,17 @@ class ResultPage extends HookConsumerWidget {
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     border: Border.all(
-                      color: const Color(0xFFFDC700),
+                      color: appColors.yellow,
                       width: 3.5,
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: const Color(0xFFFDC700).withValues(alpha: 0.2),
+                        color: appColors.yellow.withValues(alpha: 0.2),
                         blurRadius: 40,
                         spreadRadius: 20,
                       ),
                       BoxShadow(
-                        color: const Color(0xFFFDC700).withValues(alpha: 0.2),
+                        color: appColors.yellow.withValues(alpha: 0.2),
                         blurRadius: 60,
                         spreadRadius: 30,
                       ),
@@ -86,13 +89,13 @@ class ResultPage extends HookConsumerWidget {
                   child: Container(
                     width: 48.w,
                     height: 48.w,
-                    decoration: const BoxDecoration(
-                      color: Color(0xFFFDC700),
+                    decoration: BoxDecoration(
+                      color: appColors.yellow,
                       shape: BoxShape.circle,
                     ),
                     child: Icon(
                       Icons.favorite,
-                      color: Colors.white,
+                      color: appColors.white,
                       size: 28.w,
                     ),
                   ),
@@ -104,10 +107,8 @@ class ResultPage extends HookConsumerWidget {
             // CONGRATULATIONS! テキスト
             Text(
               'CONGRATULATIONS!',
-              style: TextStyle(
-                fontSize: 32.sp,
-                fontWeight: FontWeight.w900,
-                color: const Color(0xFF2C2C2C),
+              style: appTextStyles.t30Black.copyWith(
+                color: appColors.textMain,
               ),
             ),
             SizedBox(height: 24.h),
@@ -119,17 +120,14 @@ class ResultPage extends HookConsumerWidget {
                     children: [
                       TextSpan(
                         text: matchedUserName,
-                        style: TextStyle(
-                          fontSize: 20.sp,
-                          fontWeight: FontWeight.bold,
-                          color: const Color(0xFF2C2C2C),
+                        style: appTextStyles.t20Bold.copyWith(
+                          color: appColors.textMain,
                         ),
                       ),
                       TextSpan(
                         text: 'さんと',
-                        style: TextStyle(
-                          fontSize: 20.sp,
-                          color: const Color(0xFF2C2C2C),
+                        style: appTextStyles.t18Medium.copyWith(
+                          color: appColors.textMain,
                         ),
                       ),
                     ],
@@ -138,9 +136,8 @@ class ResultPage extends HookConsumerWidget {
                 SizedBox(height: 4.h),
                 Text(
                   'マッチング成立！',
-                  style: TextStyle(
-                    fontSize: 20.sp,
-                    color: const Color(0xFF2C2C2C),
+                  style: appTextStyles.t18Medium.copyWith(
+                    color: appColors.textMain,
                   ),
                 ),
               ],
@@ -154,7 +151,7 @@ class ResultPage extends HookConsumerWidget {
               leading: Icon(
                 Symbols.home,
                 size: 20.w,
-                color: const Color(0xFF2C2C2C),
+                color: appColors.black,
               ),
               text: 'ホームへ戻る',
             ),
@@ -165,6 +162,9 @@ class ResultPage extends HookConsumerWidget {
   }
 
   Widget _buildNoMatchBody(BuildContext context) {
+    final appColors = Theme.of(context).appColors;
+    final appTextStyles = Theme.of(context).appTextStyles;
+
     // TODO: 実際の投票データを取得
     final voters = useState<List<Voter>>([
       const Voter(
@@ -215,23 +215,22 @@ class ResultPage extends HookConsumerWidget {
             Container(
               width: 80,
               height: 80,
-              decoration: const BoxDecoration(
-                color: Color(0xFFF5F5F5),
+              decoration: BoxDecoration(
+                color: appColors.containerFill,
                 shape: BoxShape.circle,
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.favorite_border,
                 size: 48,
-                color: Color(0xFF9E9E9E),
+                color: appColors.textSecondary,
               ),
             ),
             AppGaps.g24,
             // 「残念... マッチングならず」テキスト
             Text(
-              '残念... マッチングならず',
-              style: TextStyle(
-                fontSize: 20.sp,
-                color: const Color(0xFF2C2C2C),
+              '残念...マッチングならず',
+              style: appTextStyles.t20Bold.copyWith(
+                color: appColors.textSecondary,
               ),
             ),
             AppGaps.g32,
@@ -242,9 +241,9 @@ class ResultPage extends HookConsumerWidget {
                   Container(
                     padding: const EdgeInsets.all(AppSizes.s16),
                     decoration: BoxDecoration(
-                      color: Colors.grey.shade100,
+                      color: appColors.containerFill,
                       border: Border.all(
-                        color: Colors.grey.shade300,
+                        color: appColors.textSecondary,
                       ),
                       borderRadius: const BorderRadius.only(
                         topLeft: Radius.circular(8),
@@ -256,15 +255,13 @@ class ResultPage extends HookConsumerWidget {
                         Icon(
                           Icons.favorite,
                           size: 20.w,
-                          color: const Color(0xFFFF69B4),
+                          color: appColors.pink,
                         ),
                         SizedBox(width: 8.w),
                         Text(
                           'あなたに投票した人',
-                          style: TextStyle(
-                            fontSize: 16.sp,
-                            fontWeight: FontWeight.w500,
-                            color: const Color(0xFF2C2C2C),
+                          style: appTextStyles.t16Bold.copyWith(
+                            color: appColors.textMain,
                           ),
                         ),
                       ],
@@ -276,13 +273,13 @@ class ResultPage extends HookConsumerWidget {
                       decoration: BoxDecoration(
                         border: Border(
                           left: BorderSide(
-                            color: Colors.grey.shade300,
+                            color: appColors.textSecondary,
                           ),
                           right: BorderSide(
-                            color: Colors.grey.shade300,
+                            color: appColors.textSecondary,
                           ),
                           bottom: BorderSide(
-                            color: Colors.grey.shade300,
+                            color: appColors.textSecondary,
                           ),
                         ),
                         borderRadius: const BorderRadius.only(
@@ -291,8 +288,8 @@ class ResultPage extends HookConsumerWidget {
                         ),
                       ),
                       child: voters.value.isNotEmpty
-                          ? _buildVotersList(voters.value)
-                          : _buildNoVotesMessage(),
+                          ? _buildVotersList(context, voters.value)
+                          : _buildNoVotesMessage(context),
                     ),
                   ),
                 ],
@@ -308,7 +305,7 @@ class ResultPage extends HookConsumerWidget {
               leading: Icon(
                 Symbols.home,
                 size: 20.w,
-                color: const Color(0xFF2C2C2C),
+                color: appColors.black,
               ),
               text: 'ホームへ戻る',
             ),
@@ -318,26 +315,29 @@ class ResultPage extends HookConsumerWidget {
     );
   }
 
-  Widget _buildNoVotesMessage() {
+  Widget _buildNoVotesMessage(BuildContext context) {
+    final appColors = Theme.of(context).appColors;
+    final appTextStyles = Theme.of(context).appTextStyles;
     return Center(
       child: Text(
         'まだ投票はありませんでした...',
-        style: TextStyle(
-          fontSize: 16.sp,
-          color: const Color(0xFF9E9E9E),
+        style: appTextStyles.t16Regular.copyWith(
+          color: appColors.textSecondary,
         ),
       ),
     );
   }
 
-  Widget _buildVotersList(List<Voter> voters) {
+  Widget _buildVotersList(BuildContext context, List<Voter> voters) {
+    final appColors = Theme.of(context).appColors;
+    final appTextStyles = Theme.of(context).appTextStyles;
     return ListView.separated(
       padding: const EdgeInsets.all(AppSizes.s16),
       itemCount: voters.length,
       separatorBuilder: (context, index) => Divider(
         height: 24,
         thickness: 1,
-        color: Colors.grey.shade300,
+        color: appColors.textSecondary,
         endIndent: 0,
       ),
       itemBuilder: (context, index) {
@@ -355,10 +355,8 @@ class ResultPage extends HookConsumerWidget {
                 children: [
                   Text(
                     voter.nickname,
-                    style: TextStyle(
-                      fontSize: 16.sp,
-                      fontWeight: FontWeight.bold,
-                      color: const Color(0xFF2C2C2C),
+                    style: appTextStyles.t16Bold.copyWith(
+                      color: appColors.textMain,
                     ),
                   ),
                   SizedBox(height: 4.h),
@@ -367,14 +365,13 @@ class ResultPage extends HookConsumerWidget {
                       Icon(
                         Icons.favorite,
                         size: 14.w,
-                        color: const Color(0xFFFF69B4),
+                        color: appColors.pink,
                       ),
                       SizedBox(width: 4.w),
                       Text(
                         '${voter.voteCount}回',
-                        style: TextStyle(
-                          fontSize: 14.sp,
-                          color: const Color(0xFF9E9E9E),
+                        style: appTextStyles.t14Regular.copyWith(
+                          color: appColors.textSecondary,
                         ),
                       ),
                     ],

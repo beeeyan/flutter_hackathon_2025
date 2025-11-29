@@ -6,6 +6,7 @@ import 'package:material_symbols_icons/symbols.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
 import '../../config/app_sizes.dart';
+import '../../config/theme/theme_extension.dart';
 import '../../routing/go_router.dart';
 import '../../util/page_mixin.dart';
 import '../../widgets/app_filled_button.dart';
@@ -120,6 +121,8 @@ class RoomLobbyPage extends ConsumerWidget with PageMixin {
     bool isHost,
     String myUid,
   ) {
+    final appColors = Theme.of(context).appColors;
+    final appTextStyles = Theme.of(context).appTextStyles;
     return Scaffold(
       appBar: AppBar(
         title: const Text('待機中...'),
@@ -141,7 +144,7 @@ class RoomLobbyPage extends ConsumerWidget with PageMixin {
               children: [
                 Container(
                   width: double.infinity,
-                  color: const Color(0xFFECECF0).withValues(alpha: 0.2),
+                  color: appColors.containerFill.withValues(alpha: 0.2),
                   child: Column(
                     children: [
                       AppGaps.g16,
@@ -149,14 +152,14 @@ class RoomLobbyPage extends ConsumerWidget with PageMixin {
                       Container(
                         padding: const EdgeInsets.all(AppSizes.s16),
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: appColors.white,
                           borderRadius: BorderRadius.circular(AppSizes.s16),
                           border: Border.all(
-                            color: Colors.grey.shade300,
+                            color: appColors.textSecondary,
                           ),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.1),
+                              color: appColors.black.withValues(alpha: 0.1),
                               blurRadius: 1,
                               offset: const Offset(1, 1),
                             ),
@@ -165,7 +168,7 @@ class RoomLobbyPage extends ConsumerWidget with PageMixin {
                         child: QrImageView(
                           data: roomId,
                           size: 200.w,
-                          backgroundColor: Colors.white,
+                          backgroundColor: appColors.white,
                         ),
                       ),
                       AppGaps.g16,
@@ -186,14 +189,14 @@ class RoomLobbyPage extends ConsumerWidget with PageMixin {
                             vertical: 12,
                           ),
                           decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: appColors.white,
                             borderRadius: BorderRadius.circular(100),
                             border: Border.all(
-                              color: Colors.grey.shade300,
+                              color: appColors.textSecondary,
                             ),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withValues(alpha: 0.1),
+                                color: appColors.black.withValues(alpha: 0.1),
                                 blurRadius: 1,
                                 offset: const Offset(1, 1),
                               ),
@@ -204,17 +207,15 @@ class RoomLobbyPage extends ConsumerWidget with PageMixin {
                             children: [
                               Text(
                                 'ID: $roomId',
-                                style: TextStyle(
-                                  fontSize: 16.sp,
-                                  fontWeight: FontWeight.w500,
-                                  color: Colors.black,
+                                style: appTextStyles.t18Bold.copyWith(
+                                  color: appColors.textMain,
                                 ),
                               ),
                               const SizedBox(width: AppSizes.s8),
                               Icon(
                                 Symbols.content_copy,
                                 size: 18.w,
-                                color: Colors.black,
+                                color: appColors.black,
                               ),
                             ],
                           ),
@@ -228,7 +229,7 @@ class RoomLobbyPage extends ConsumerWidget with PageMixin {
                 Divider(
                   height: 1,
                   thickness: 1,
-                  color: Colors.grey.withValues(alpha: 0.3),
+                  color: appColors.textSecondary,
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(
@@ -242,9 +243,8 @@ class RoomLobbyPage extends ConsumerWidget with PageMixin {
                         alignment: Alignment.centerLeft,
                         child: Text(
                           '参加者 (${members.length}人)',
-                          style: TextStyle(
-                            fontSize: 14.sp,
-                            color: Colors.grey,
+                          style: appTextStyles.t14Medium.copyWith(
+                            color: appColors.textSecondary,
                           ),
                         ),
                       ),
@@ -258,10 +258,10 @@ class RoomLobbyPage extends ConsumerWidget with PageMixin {
                             child: Container(
                               padding: const EdgeInsets.all(12),
                               decoration: BoxDecoration(
-                                color: isMe ? Colors.grey.shade100 : null,
+                                color: isMe ? appColors.containerFill : null,
                                 borderRadius: BorderRadius.circular(12),
                                 border: Border.all(
-                                  color: Colors.grey.shade300,
+                                  color: appColors.textSecondary,
                                 ),
                               ),
                               child: Row(
@@ -280,11 +280,10 @@ class RoomLobbyPage extends ConsumerWidget with PageMixin {
                                           children: [
                                             Text(
                                               member.nickname,
-                                              style: TextStyle(
-                                                fontSize: 16.sp,
-                                                fontWeight: FontWeight.bold,
-                                                color: Colors.black,
-                                              ),
+                                              style: appTextStyles.t16Bold
+                                                  .copyWith(
+                                                    color: appColors.textMain,
+                                                  ),
                                             ),
                                             if (isMe) ...[
                                               const SizedBox(
@@ -297,7 +296,8 @@ class RoomLobbyPage extends ConsumerWidget with PageMixin {
                                                       vertical: AppSizes.s2,
                                                     ),
                                                 decoration: BoxDecoration(
-                                                  color: Colors.grey.shade200,
+                                                  color:
+                                                      appColors.containerFill,
                                                   borderRadius:
                                                       BorderRadius.circular(
                                                         10,
@@ -305,11 +305,11 @@ class RoomLobbyPage extends ConsumerWidget with PageMixin {
                                                 ),
                                                 child: Text(
                                                   'YOU',
-                                                  style: TextStyle(
-                                                    fontSize: 10.sp,
-                                                    fontWeight: FontWeight.bold,
-                                                    color: Colors.black,
-                                                  ),
+                                                  style: appTextStyles.t10Medium
+                                                      .copyWith(
+                                                        color:
+                                                            appColors.textMain,
+                                                      ),
                                                 ),
                                               ),
                                             ],
@@ -318,10 +318,10 @@ class RoomLobbyPage extends ConsumerWidget with PageMixin {
                                         const SizedBox(height: AppSizes.s4),
                                         Text(
                                           member.bio,
-                                          style: TextStyle(
-                                            fontSize: 14.sp,
-                                            color: Colors.grey.shade700,
-                                          ),
+                                          style: appTextStyles.t14Regular
+                                              .copyWith(
+                                                color: appColors.textSecondary,
+                                              ),
                                         ),
                                       ],
                                     ),
@@ -348,10 +348,10 @@ class RoomLobbyPage extends ConsumerWidget with PageMixin {
             child: Container(
               padding: const EdgeInsets.all(AppSizes.s24),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: appColors.white,
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.1),
+                    color: appColors.black.withValues(alpha: 0.1),
                     blurRadius: 10,
                     offset: const Offset(0, -2),
                   ),
@@ -388,7 +388,7 @@ class RoomLobbyPage extends ConsumerWidget with PageMixin {
                     : Container(
                         padding: const EdgeInsets.all(AppSizes.s16),
                         decoration: BoxDecoration(
-                          color: Colors.grey.shade200,
+                          color: appColors.containerFill,
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Row(
@@ -401,16 +401,15 @@ class RoomLobbyPage extends ConsumerWidget with PageMixin {
                               child: CircularProgressIndicator(
                                 strokeWidth: 2,
                                 valueColor: AlwaysStoppedAnimation<Color>(
-                                  Colors.grey.shade600,
+                                  appColors.textSecondary,
                                 ),
                               ),
                             ),
                             const SizedBox(width: 12),
                             Text(
                               'ホストが開始するのを待っています...',
-                              style: TextStyle(
-                                fontSize: 14.sp,
-                                color: Colors.grey.shade700,
+                              style: appTextStyles.t14Regular.copyWith(
+                                color: appColors.textSecondary,
                               ),
                             ),
                           ],

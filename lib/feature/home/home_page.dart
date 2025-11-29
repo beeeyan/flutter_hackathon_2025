@@ -4,6 +4,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
 import '../../config/app_sizes.dart';
+import '../../config/theme/theme_extension.dart';
 import '../../routing/go_router.dart';
 import '../../util/page_mixin.dart';
 import '../../widgets/app_filled_button.dart';
@@ -20,15 +21,13 @@ class HomePage extends ConsumerWidget with PageMixin {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final appColors = Theme.of(context).appColors;
+    final appTextStyles = Theme.of(context).appTextStyles;
     final userAsync = ref.watch(currentUserProvider);
     return Scaffold(
       body: SafeArea(
         child: userAsync.when(
           data: (user) {
-
-            
-
-
             return Column(
               children: [
                 // User profile section
@@ -37,13 +36,23 @@ class HomePage extends ConsumerWidget with PageMixin {
                     imageUrl: user?.iconUrl ?? '',
                     size: 56.w,
                   ),
-                  title: Text(user?.nickname ?? ''),
-                  subtitle: Text(user?.bio ?? ''),
+                  title: Text(
+                    user?.nickname ?? '',
+                    style: appTextStyles.t14Medium.copyWith(
+                      color: appColors.textMain,
+                    ),
+                  ),
+                  subtitle: Text(
+                    user?.bio ?? '',
+                    style: appTextStyles.t12Regular.copyWith(
+                      color: appColors.textSecondary,
+                    ),
+                  ),
                 ),
                 AppGaps.g8,
                 Divider(
                   height: 1,
-                  color: Colors.grey.withValues(alpha: 0.3),
+                  color: appColors.textSecondary,
                 ),
 
                 // Main content - Myaku logo and branding
@@ -57,38 +66,33 @@ class HomePage extends ConsumerWidget with PageMixin {
                           width: 120.w,
                           height: 120.w,
                           decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: appColors.white,
                             shape: BoxShape.circle,
                             border: Border.all(
-                              color: const Color(0xFF2C2C2C),
+                              color: appColors.black,
                               width: 2,
                             ),
                           ),
                           child: Icon(
                             Symbols.favorite,
                             size: 64.w,
-                            color: const Color(0xFF2C2C2C),
+                            color: appColors.black,
                           ),
                         ),
                         SizedBox(height: 24.h),
                         // App name
                         Text(
                           'Myaku',
-                          style: TextStyle(
-                            fontSize: 32.sp,
-                            fontWeight: FontWeight.bold,
-                            color: const Color(0xFF1C1C1C),
-                            letterSpacing: -0.5,
+                          style: appTextStyles.t48Black.copyWith(
+                            color: appColors.textMain,
                           ),
                         ),
                         SizedBox(height: 8.h),
                         // Tagline
                         Text(
                           'TAP TO FEEL THE HEAT',
-                          style: TextStyle(
-                            fontSize: 12.sp,
-                            fontWeight: FontWeight.w400,
-                            color: const Color(0xFF8E8E8E),
+                          style: appTextStyles.t12Medium.copyWith(
+                            color: appColors.textSecondary,
                             letterSpacing: 1.2,
                           ),
                         ),
@@ -131,8 +135,11 @@ class HomePage extends ConsumerWidget with PageMixin {
                             },
                             onComplete: () async {
                               // 最新のセッション情報を取得して遷移
-                              final sessionState = ref.read(sessionNotifierProvider);
-                              if (sessionState.hasValue && sessionState.value != null) {
+                              final sessionState = ref.read(
+                                sessionNotifierProvider,
+                              );
+                              if (sessionState.hasValue &&
+                                  sessionState.value != null) {
                                 await RoomLobbyPageRoute(
                                   qrCode: sessionState.value!.qrCode,
                                 ).push<void>(context);
@@ -150,7 +157,7 @@ class HomePage extends ConsumerWidget with PageMixin {
                         leading: Icon(
                           Symbols.group,
                           size: 24.w,
-                          color: Colors.white,
+                          color: appColors.white,
                         ),
                         text: 'ルームを作成する (幹事)',
                         height: 56,
@@ -163,12 +170,12 @@ class HomePage extends ConsumerWidget with PageMixin {
                         leading: Icon(
                           Symbols.login,
                           size: 24.w,
-                          color: Colors.black,
+                          color: appColors.black,
                         ),
                         text: 'ルームに参加する (ゲスト)',
                         height: 56,
-                        textColor: Colors.black,
-                        backgroundColor: Colors.white,
+                        textColor: appColors.black,
+                        backgroundColor: appColors.white,
                       ),
                     ],
                   ),
