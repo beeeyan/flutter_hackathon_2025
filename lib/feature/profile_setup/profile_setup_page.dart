@@ -4,12 +4,14 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../config/app_sizes.dart';
 import '../../routing/go_router.dart';
+import '../../util/logger.dart';
+import '../../util/page_mixin.dart';
 import '../../widgets/app_filled_button.dart';
 import '../../widgets/app_profile_icon.dart';
 import '../../widgets/app_text_form_field.dart';
 import '../user/infra/user_repository.dart';
 
-class ProfileSetupPage extends HookConsumerWidget {
+class ProfileSetupPage extends HookConsumerWidget with PageMixin {
   const ProfileSetupPage({super.key});
 
   static const name = 'profile_setup';
@@ -27,9 +29,11 @@ class ProfileSetupPage extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final selectedIconUrl = useState<String>(iconUrls[0]);
+    final selectedIconUrl = useState<String?>(null);
+    final isUploadingIcon = useState<bool>(false);
     final nicknameController = useTextEditingController();
     final bioController = useTextEditingController();
+
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
@@ -44,9 +48,91 @@ class ProfileSetupPage extends HookConsumerWidget {
                 AppGaps.g32,
 
                 // アバター画像
-                AppProfileIcon(
-                  imageUrl: selectedIconUrl.value,
-                  size: 128,
+                GestureDetector(
+                  onTap: isUploadingIcon.value
+                      ? null
+                      : () async {
+                          try {
+                            isUploadingIcon.value = true;
+                            final userRepository = ref.read(
+                              userRepositoryProvider,
+                            );
+                            final uploadedUrl = await userRepository
+                                .pickAndUploadIcon();
+                            if (uploadedUrl != null && context.mounted) {
+                              selectedIconUrl.value = uploadedUrl;
+                            }
+                          } on Exception catch (e) {
+                            logger.e('Failed to upload image: $e');
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('画像のアップロードに失敗しました'),
+                                ),
+                              );
+                            }
+                          } finally {
+                            if (context.mounted) {
+                              isUploadingIcon.value = false;
+                            }
+                          }
+                        },
+                  child: Stack(
+                    children: [
+                      // 画像が選択されている場合は表示、未選択の場合はプレースホルダー
+                      selectedIconUrl.value != null
+                          ? AppProfileIcon(
+                              imageUrl: selectedIconUrl.value!,
+                              size: 128,
+                            )
+                          : Container(
+                              width: 128,
+                              height: 128,
+                              decoration: BoxDecoration(
+                                color: Colors.grey.shade300,
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Icon(
+                                Icons.person,
+                                size: 64,
+                                color: Colors.grey,
+                              ),
+                            ),
+                      // ローディング中はオーバーレイを表示
+                      if (isUploadingIcon.value)
+                        Positioned.fill(
+                          child: DecoratedBox(
+                            decoration: BoxDecoration(
+                              color: Colors.black.withValues(alpha: 0.3),
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Center(
+                              child: CircularProgressIndicator(
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                      // 右下のカメラアイコン
+                      Positioned(
+                        bottom: 0,
+                        right: 0,
+                        child: Container(
+                          width: AppSizes.s32,
+                          height: AppSizes.s32,
+                          decoration: BoxDecoration(
+                            color: Colors.grey.shade200,
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.camera_alt_outlined,
+                            size: 18,
+                            color: Colors.black87,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
 
                 AppGaps.g32,
@@ -138,20 +224,27 @@ class ProfileSetupPage extends HookConsumerWidget {
 
                 AppFilledButton(
                   onPressed:
-                      nicknameController.value.text.isEmpty ||
+                      selectedIconUrl.value == null ||
+                          nicknameController.value.text.isEmpty ||
                           bioController.value.text.isEmpty
                       ? null
                       : () async {
-                          await ref
-                              .read(userRepositoryProvider)
-                              .createUser(
-                                iconUrl: selectedIconUrl.value,
-                                nickname: nicknameController.text,
-                                bio: bioController.text,
-                              );
-                          if (context.mounted) {
-                            const HomePageRoute().go(context);
-                          }
+                          await execute(
+                            context,
+                            ref,
+                            action: () async {
+                              await ref
+                                  .read(userRepositoryProvider)
+                                  .createUser(
+                                    iconUrl: selectedIconUrl.value!,
+                                    nickname: nicknameController.text,
+                                    bio: bioController.text,
+                                  );
+                            },
+                            onComplete: () async {
+                              const HomePageRoute().go(context);
+                            },
+                          );
                         },
                   text: '設定を保存してはじめる',
                 ),

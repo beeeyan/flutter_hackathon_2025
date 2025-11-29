@@ -2,6 +2,10 @@
     package="work.sendfun.hackathon">
     <!-- カメラパーミッション -->
     <uses-permission android:name="android.permission.CAMERA" />
+    <!-- フォトライブラリへのアクセス（Android 13未満） -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
+    <!-- フォトライブラリへのアクセス（Android 13以降） -->
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
    <application
         android:label="@string/app_name"
         android:name="${applicationName}"
