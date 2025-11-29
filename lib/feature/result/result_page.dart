@@ -216,7 +216,7 @@ class ResultPage extends HookConsumerWidget {
               width: 80,
               height: 80,
               decoration: BoxDecoration(
-                color: appColors.containerFill,
+                color: appColors.containerFill.withValues(alpha: 0.2),
                 shape: BoxShape.circle,
               ),
               child: Icon(
@@ -241,7 +241,7 @@ class ResultPage extends HookConsumerWidget {
                   Container(
                     padding: const EdgeInsets.all(AppSizes.s16),
                     decoration: BoxDecoration(
-                      color: appColors.containerFill,
+                      color: appColors.containerFill.withValues(alpha: 0.2),
                       border: Border.all(
                         color: appColors.textSecondary,
                       ),

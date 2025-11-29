@@ -31,7 +31,7 @@ class AppFilledButton extends StatelessWidget {
       child: FilledButton(
         onPressed: onPressed,
         style: FilledButton.styleFrom(
-          backgroundColor: backgroundColor ?? appColors.containerFill,
+          backgroundColor: backgroundColor ?? appColors.black,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8),
           ),
