@@ -9,7 +9,6 @@
 users/{uid}                          # ユーザープロフィール
 sessions/{sessionId}                 # マッチングセッション
 sessions/{sessionId}/members/{uid}   # セッション参加メンバー
-defaultIcons/{iconId}                # デフォルトアイコン画像一覧
 ```
 
 ### users コレクション
@@ -20,9 +19,7 @@ defaultIcons/{iconId}                # デフォルトアイコン画像一覧
 
 ```json
 {
-  "iconUrl": "https://.../avatar.png",      // プロフィール画像URL（デフォルトアイコンまたはアップロード画像）
-  "iconType": "default",                    // "default" または "uploaded"
-  "defaultIconId": "icon_001",              // デフォルトアイコン使用時のID（iconType="default"の場合）
+  "iconUrl": "https://.../avatar.png",      // プロフィール画像URL（デ
   "nickname": "たろう",                       // ニックネーム
   "bio": "よろしく！",                        // 一言コメント（自己紹介）
   "createdAt": "<serverTimestamp>",         // 作成日時
@@ -40,14 +37,18 @@ defaultIcons/{iconId}                # デフォルトアイコン画像一覧
 {
   "name": "11/29 青山カフェ会",         // セッション名（最初は指定不要）
   "hostUid": "uid_host",              // ホストのUID
-  "qrCode": "SES-ABCD-1234",          // QRコード値
-  "startAt": "<Timestamp>",           // 開始時刻（null で未開始）
-  "endAt": "<Timestamp>",             // 終了時刻
-  "status": "open|closed",            // セッション状態
+  "qrCode": "SES-ABCD-1234",          // QRコード値(テキスト入力する場合を考えてある程度入力しやすいものを採番する) 
+  "status": "waiting|active|result",  // セッション状態
   "createdAt": "<serverTimestamp>",   // 作成日時
   "updatedAt": "<serverTimestamp>"    // 更新日時
 }
 ```
+
+waiting : マッチングが始まっていない状態
+active : マッチング中の状態
+result : 結果表示中の状態
+  
+タイマーは、各端末で計測する。
 
 ### sessions/{sessionId}/members サブコレクション
 
@@ -74,54 +75,18 @@ defaultIcons/{iconId}                # デフォルトアイコン画像一覧
     "uid_AAA": 10,                     // Aさん → この人 へ 10タップ
     "uid_BBB": 5,                      // Bさん → この人 へ 5タップ
     "uid_CCC": 9                       // Cさん → この人 へ 9タップ
-  }
-}
-```
-
-### defaultIcons コレクション
-
-アップロード機能がない初期段階で使用するデフォルトアイコン画像の一覧を管理します。
-
-**パス**: `defaultIcons/{iconId}`
-
-```json
-{
-  "url": "https://example.com/icons/avatar_01.png",  // アイコン画像URL
-  "name": "アバター01",                               // アイコン名
-  "category": "animal",                              // カテゴリ（animal, character, abstract など）
-  "isActive": true,                                  // 利用可能かどうか
-  "order": 1,                                        // 表示順序
-  "createdAt": "<serverTimestamp>",                  // 作成日時
-  "updatedAt": "<serverTimestamp>"                   // 更新日時
-}
-```
-
-**使用例**:
-```json
-{
-  "defaultIcons/icon_001": {
-    "url": "https://example.com/icons/cat.png",
-    "name": "ねこ",
-    "category": "animal",
-    "isActive": true,
-    "order": 1
   },
-  "defaultIcons/icon_002": {
-    "url": "https://example.com/icons/dog.png", 
-    "name": "いぬ",
-    "category": "animal",
-    "isActive": true,
-    "order": 2
-  },
-  "defaultIcons/icon_003": {
-    "url": "https://example.com/icons/smile.png",
-    "name": "スマイル",
-    "category": "character",
-    "isActive": true,
-    "order": 3
+
+  "Sended": {
+    "uid_AAA": 10,                     // この人 → Aさん へ 10タップ
+    "uid_BBB": 5,                      // この人 → Bさん へ 5タップ
+    "uid_CCC": 9                       // この人 → Cさん へ 9タップ
   }
+
 }
 ```
+
+※ bySenderとSended両方あるのは、マッチングの処理を簡単にするため　　
 
 ### データフロー
 
@@ -135,16 +100,20 @@ defaultIcons/{iconId}                # デフォルトアイコン画像一覧
 
 3. **QRコード発行**
    - `sessions/{sessionId}` にデータ作成
-   - `startAt`: `null`
-   - `status`: `"closed"`
+   - `status`: `"waiting"`
 
 4. **QRコード読み込み**
    - `sessions/{sessionId}/members/{uid}` にデータ作成
 
 5. **開始ボタン押下**
    - `sessions/{sessionId}` を更新
-   - `startAt`: 開始時の時間
-   - `status`: `"open"`
+   - `status`: `"active"`
 
 6. **アイコンタップ**
-   - `sessions/{sessionId}/members/{targetUid}` の `bySender` データを更新
+   - `sessions/{sessionId}/members/{targetUid}` の 
+   アイコンに表示されている人の`bySender`と  
+   自分の`sended`を更新する
+
+7. **ホストが終了ボタン押下**
+   - `sessions/{sessionId}` を更新
+   - `status`: `"result"`
