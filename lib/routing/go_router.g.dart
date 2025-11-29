@@ -6,41 +6,27 @@ part of 'go_router.dart';
 // GoRouterGenerator
 // **************************************************************************
 
-List<RouteBase> get $appRoutes => [$rootShellRoute];
+List<RouteBase> get $appRoutes => [
+  $profileSetupPageRoute,
+  $homePageRoute,
+  $joinRoomPageRoute,
+  $roomLobbyPageRoute,
+  $votingPageRoute,
+  $resultPageRoute,
+];
 
-RouteBase get $rootShellRoute => ShellRouteData.$route(
-  navigatorKey: RootShellRoute.$navigatorKey,
-  factory: $RootShellRouteExtension._fromState,
-  routes: [
-    GoRouteData.$route(
-      path: '/home',
-      name: 'home',
-      factory: $MyHomePageRoute._fromState,
-    ),
-    GoRouteData.$route(
-      path: '/sample1',
-      name: 'sample1',
-      factory: $Sample1PageRoute._fromState,
-    ),
-    GoRouteData.$route(
-      path: '/sample2',
-      name: 'sample2',
-      factory: $Sample2PageRoute._fromState,
-    ),
-  ],
+RouteBase get $profileSetupPageRoute => GoRouteData.$route(
+  path: '/profile_setup',
+  name: 'profile_setup',
+  factory: $ProfileSetupPageRoute._fromState,
 );
 
-extension $RootShellRouteExtension on RootShellRoute {
-  static RootShellRoute _fromState(GoRouterState state) =>
-      const RootShellRoute();
-}
-
-mixin $MyHomePageRoute on GoRouteData {
-  static MyHomePageRoute _fromState(GoRouterState state) =>
-      const MyHomePageRoute();
+mixin $ProfileSetupPageRoute on GoRouteData {
+  static ProfileSetupPageRoute _fromState(GoRouterState state) =>
+      const ProfileSetupPageRoute();
 
   @override
-  String get location => GoRouteData.$location('/home');
+  String get location => GoRouteData.$location('/profile_setup');
 
   @override
   void go(BuildContext context) => context.go(location);
@@ -56,12 +42,17 @@ mixin $MyHomePageRoute on GoRouteData {
   void replace(BuildContext context) => context.replace(location);
 }
 
-mixin $Sample1PageRoute on GoRouteData {
-  static Sample1PageRoute _fromState(GoRouterState state) =>
-      const Sample1PageRoute();
+RouteBase get $homePageRoute => GoRouteData.$route(
+  path: '/home_page',
+  name: 'home_page',
+  factory: $HomePageRoute._fromState,
+);
+
+mixin $HomePageRoute on GoRouteData {
+  static HomePageRoute _fromState(GoRouterState state) => const HomePageRoute();
 
   @override
-  String get location => GoRouteData.$location('/sample1');
+  String get location => GoRouteData.$location('/home_page');
 
   @override
   void go(BuildContext context) => context.go(location);
@@ -77,12 +68,99 @@ mixin $Sample1PageRoute on GoRouteData {
   void replace(BuildContext context) => context.replace(location);
 }
 
-mixin $Sample2PageRoute on GoRouteData {
-  static Sample2PageRoute _fromState(GoRouterState state) =>
-      const Sample2PageRoute();
+RouteBase get $joinRoomPageRoute => GoRouteData.$route(
+  path: '/join_room',
+  name: 'join_room',
+  factory: $JoinRoomPageRoute._fromState,
+);
+
+mixin $JoinRoomPageRoute on GoRouteData {
+  static JoinRoomPageRoute _fromState(GoRouterState state) =>
+      const JoinRoomPageRoute();
 
   @override
-  String get location => GoRouteData.$location('/sample2');
+  String get location => GoRouteData.$location('/join_room');
+
+  @override
+  void go(BuildContext context) => context.go(location);
+
+  @override
+  Future<T?> push<T>(BuildContext context) => context.push<T>(location);
+
+  @override
+  void pushReplacement(BuildContext context) =>
+      context.pushReplacement(location);
+
+  @override
+  void replace(BuildContext context) => context.replace(location);
+}
+
+RouteBase get $roomLobbyPageRoute => GoRouteData.$route(
+  path: '/room_lobby',
+  name: 'room_lobby',
+  factory: $RoomLobbyPageRoute._fromState,
+);
+
+mixin $RoomLobbyPageRoute on GoRouteData {
+  static RoomLobbyPageRoute _fromState(GoRouterState state) =>
+      const RoomLobbyPageRoute();
+
+  @override
+  String get location => GoRouteData.$location('/room_lobby');
+
+  @override
+  void go(BuildContext context) => context.go(location);
+
+  @override
+  Future<T?> push<T>(BuildContext context) => context.push<T>(location);
+
+  @override
+  void pushReplacement(BuildContext context) =>
+      context.pushReplacement(location);
+
+  @override
+  void replace(BuildContext context) => context.replace(location);
+}
+
+RouteBase get $votingPageRoute => GoRouteData.$route(
+  path: '/voting',
+  name: 'voting',
+  factory: $VotingPageRoute._fromState,
+);
+
+mixin $VotingPageRoute on GoRouteData {
+  static VotingPageRoute _fromState(GoRouterState state) =>
+      const VotingPageRoute();
+
+  @override
+  String get location => GoRouteData.$location('/voting');
+
+  @override
+  void go(BuildContext context) => context.go(location);
+
+  @override
+  Future<T?> push<T>(BuildContext context) => context.push<T>(location);
+
+  @override
+  void pushReplacement(BuildContext context) =>
+      context.pushReplacement(location);
+
+  @override
+  void replace(BuildContext context) => context.replace(location);
+}
+
+RouteBase get $resultPageRoute => GoRouteData.$route(
+  path: '/result',
+  name: 'result',
+  factory: $ResultPageRoute._fromState,
+);
+
+mixin $ResultPageRoute on GoRouteData {
+  static ResultPageRoute _fromState(GoRouterState state) =>
+      const ResultPageRoute();
+
+  @override
+  String get location => GoRouteData.$location('/result');
 
   @override
   void go(BuildContext context) => context.go(location);

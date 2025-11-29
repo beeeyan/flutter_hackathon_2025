@@ -8,7 +8,6 @@ import 'config/firebase/prod/firebase_options.dart' as prod;
 import 'config/theme/theme.dart';
 import 'enum/flavor.dart';
 import 'feature/auth/infra/auth_repository.dart';
-import 'feature/user/infra/user_repository.dart';
 import 'routing/go_router.dart';
 import 'util/logger.dart';
 
@@ -21,19 +20,6 @@ void main() async {
 
   // 匿名認証でサインイン
   await container.read(authRepositoryProvider).signInAnonymously();
-
-  // 認証後、ユーザードキュメントを作成
-  final isUserExists =
-      await container.read(userRepositoryProvider).userExists();
-  if (!isUserExists) {
-    await container
-        .read(userRepositoryProvider)
-        .createUser(
-          iconUrl: 'https://placehold.jp/150x150.png',
-          nickname: 'テストユーザー',
-          bio: 'テストユーザーです',
-        );
-  }
 
   // Flavor を取得し Logging
   logger.i('FLAVOR : ${flavor.name}');
