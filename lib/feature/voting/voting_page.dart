@@ -95,7 +95,7 @@ class VotingPage extends HookConsumerWidget {
       () {
         sessionAsync.whenData((session) {
           if (session != null && session.status == 'result') {
-            const ResultPageRoute().go(context);
+            ResultPageRoute(qrCode: qrCode).go(context);
           }
         });
         return null;
@@ -132,13 +132,13 @@ class VotingPage extends HookConsumerWidget {
             ),
           ),
 
-          // E06〜E09: 終了オーバーレイ
+          // E06〜09: 終了オーバーレイ
           if (votingState.isTimeUp)
             _TimeUpOverlay(
               isHost: isHost,
-              onResultPressed: ref
-                  .read(sessionRepositoryProvider)
-                  .endSession(qrCode),
+              onResultPressed: () async {
+                await ref.read(sessionRepositoryProvider).endSession(qrCode);
+              },
             ),
         ],
       ),
@@ -227,7 +227,7 @@ class _TimeUpOverlay extends StatelessWidget {
   });
 
   final bool isHost;
-  final Future<void> onResultPressed;
+  final VoidCallback onResultPressed;
 
   @override
   Widget build(BuildContext context) {
@@ -251,9 +251,7 @@ class _TimeUpOverlay extends StatelessWidget {
             // E08 or E09: ホスト/ゲストで表示分岐
             if (isHost)
               ElevatedButton(
-                onPressed: () async {
-                  await onResultPressed;
-                },
+                onPressed: onResultPressed,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.pinkAccent,
                   foregroundColor: Colors.white,

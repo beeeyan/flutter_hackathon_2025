@@ -163,10 +163,13 @@ RouteBase get $resultPageRoute => GoRouteData.$route(
 
 mixin $ResultPageRoute on GoRouteData {
   static ResultPageRoute _fromState(GoRouterState state) =>
-      const ResultPageRoute();
+      ResultPageRoute(qrCode: state.uri.queryParameters['qr-code']!);
+
+  ResultPageRoute get _self => this as ResultPageRoute;
 
   @override
-  String get location => GoRouteData.$location('/result');
+  String get location =>
+      GoRouteData.$location('/result', queryParams: {'qr-code': _self.qrCode});
 
   @override
   void go(BuildContext context) => context.go(location);

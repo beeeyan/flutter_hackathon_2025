@@ -117,10 +117,12 @@ class VotingPageRoute extends GoRouteData with $VotingPageRoute {
   name: ResultPage.name,
 )
 class ResultPageRoute extends GoRouteData with $ResultPageRoute {
-  const ResultPageRoute();
+  const ResultPageRoute({required this.qrCode});
+
+  final String qrCode;
 
   @override
   Page<void> buildPage(BuildContext context, GoRouterState state) {
-    return buildNoAnimationTransition(const ResultPage());
+    return buildNoAnimationTransition(ResultPage(qrCode: qrCode));
   }
 }
