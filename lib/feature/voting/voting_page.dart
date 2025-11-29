@@ -4,6 +4,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../routing/go_router.dart';
+import '../session/infra/session_repository.dart';
 import 'application/state/voting_provider.dart';
 import 'presentation/game/myaku_game.dart';
 
@@ -135,16 +136,9 @@ class VotingPage extends HookConsumerWidget {
           if (votingState.isTimeUp)
             _TimeUpOverlay(
               isHost: isHost,
-              onResultPressed: () {
-                // TODO: infra層完成後にセッションステータス更新
-                // ref.read(votingRepositoryProvider).updateSessionStatus(
-                //   ref.read(currentSessionIdProvider),
-                //   'result',
-                // );
-
-                // モック: 直接画面遷移
-                const ResultPageRoute().go(context);
-              },
+              onResultPressed: ref
+                  .read(sessionRepositoryProvider)
+                  .endSession(qrCode),
             ),
         ],
       ),
@@ -233,7 +227,7 @@ class _TimeUpOverlay extends StatelessWidget {
   });
 
   final bool isHost;
-  final VoidCallback onResultPressed;
+  final Future<void> onResultPressed;
 
   @override
   Widget build(BuildContext context) {
@@ -257,7 +251,9 @@ class _TimeUpOverlay extends StatelessWidget {
             // E08 or E09: ホスト/ゲストで表示分岐
             if (isHost)
               ElevatedButton(
-                onPressed: onResultPressed,
+                onPressed: () async {
+                  await onResultPressed;
+                },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.pinkAccent,
                   foregroundColor: Colors.white,
