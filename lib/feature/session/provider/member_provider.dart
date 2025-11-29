@@ -26,6 +26,11 @@ class MemberController {
     );
   }
   
+  /// セッションから退出する
+  Future<void> leaveSession(String sessionId) async {
+    await _repository.leaveSession(sessionId);
+  }
+  
   /// ユーザーをタップする
   Future<void> tapUser({
     required String sessionId,
