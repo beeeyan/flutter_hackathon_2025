@@ -9,27 +9,72 @@ import '../../config/theme/theme_extension.dart';
 import '../../routing/go_router.dart';
 import '../../widgets/app_outlined_button.dart';
 import '../../widgets/app_profile_icon.dart';
+import '../session/domain/member.dart';
+import '../voting/application/state/voting_provider.dart';
 
 class ResultPage extends HookConsumerWidget {
-  const ResultPage({super.key});
+  const ResultPage({super.key, required this.qrCode});
 
   static const name = 'result';
   static const path = '/result';
 
+  final String qrCode;
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // TODO: 実際のマッチしたユーザー情報を取得
-    const matchedUserName = 'ハナコ';
-    const matchedUserIconUrl = 'https://i.pravatar.cc/150?img=2';
+    // MEMO: 以下はVotingPage用のProviderから取得している
+    // メンバー一覧を監視
+    final membersAsync = ref.watch(membersStreamProvider(qrCode));
 
-    // マッチしているかどうか
-    final isMatch = useState(false);
+    // 自分のメンバー情報を監視
+    final myMemberAsync = ref.watch(myMemberStreamProvider(qrCode));
+
+    // 自分が最も投票した相手
+    final topVotedTarget = useMemoized<Member?>(() {
+      final myMember = myMemberAsync.value;
+      if (myMember == null || myMember.sended.isEmpty) {
+        return null;
+      }
+      final sortedEntries = myMember.sended.entries.toList()
+        ..sort((a, b) => b.value.compareTo(a.value));
+
+      final topVotedUid = sortedEntries.first.key;
+      final members = membersAsync.value;
+      if (members == null) {
+        return null;
+      }
+      return members.firstWhere(
+        (member) => member.uid == topVotedUid,
+      );
+    }, [myMemberAsync.value]);
+
+    // _topVotedMemberが最も投票した相手のメンバーが自分かどうか（マッチしたかどうか）
+    final isMatched = useMemoized<bool>(() {
+      final members = membersAsync.value;
+      if (members == null || topVotedTarget == null) {
+        return false;
+      }
+      final topVotedMember = members.firstWhere(
+        (member) => member.uid == topVotedTarget.uid,
+      );
+      // topVotedMemberが自分を最も投票しているか確認
+      final theirTopVotedUid = topVotedMember.sended.entries.toList()
+        ..sort((a, b) => b.value.compareTo(a.value));
+      if (theirTopVotedUid.isEmpty) {
+        return false;
+      }
+      return theirTopVotedUid.first.key == myMemberAsync.value?.uid;
+    }, [membersAsync.value, myMemberAsync.value, topVotedTarget]);
+
+    // マッチしたMemberの情報
+    final matchedUserName = topVotedTarget?.nickname ?? '';
+    final matchedUserIconUrl = topVotedTarget?.iconUrl ?? '';
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('運命の結果'),
       ),
-      body: isMatch.value
+      body: isMatched
           ? _buildMatchBody(context, matchedUserName, matchedUserIconUrl)
           : _buildNoMatchBody(context),
     );
