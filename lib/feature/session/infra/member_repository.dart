@@ -58,6 +58,21 @@ class MemberRepository {
     }
   }
 
+  /// セッションから退出する
+  Future<void> leaveSession(String sessionId) async {
+    try {
+      debugPrint('User $_uid leaving session: $sessionId');
+      
+      // メンバー情報を削除
+      await _membersCollection(sessionId).doc(_uid).delete();
+      
+      debugPrint('Successfully left session: $sessionId');
+    } catch (e) {
+      debugPrint('Failed to leave session: $e');
+      throw Exception('Failed to leave session: $e');
+    }
+  }
+
   /// 自分のメンバー情報を取得（Stream）
   Stream<Member?> watchMyMember(String sessionId) {
     debugPrint('Starting to watch member $_uid in session: $sessionId');

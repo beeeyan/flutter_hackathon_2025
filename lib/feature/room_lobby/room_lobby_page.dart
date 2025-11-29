@@ -7,6 +7,7 @@ import 'package:qr_flutter/qr_flutter.dart';
 
 import '../../config/app_sizes.dart';
 import '../../routing/go_router.dart';
+import '../../util/page_mixin.dart';
 import '../../widgets/app_filled_button.dart';
 import '../../widgets/app_profile_icon.dart';
 import '../auth/application/state/auth_state.dart';
@@ -14,7 +15,7 @@ import '../session/domain/member.dart';
 import '../session/provider/member_provider.dart';
 import '../session/provider/session_provider.dart';
 
-class RoomLobbyPage extends ConsumerWidget {
+class RoomLobbyPage extends ConsumerWidget with PageMixin {
   const RoomLobbyPage({
     super.key,
     required this.qrCode,
@@ -117,8 +118,55 @@ class RoomLobbyPage extends ConsumerWidget {
         // 右側に退出ボタンを追加
         actions: [
           IconButton(
-            onPressed: () {
-              const HomePageRoute().go(context);
+            onPressed: () async {
+              // 確認ダイアログを表示
+              final shouldLeave = await showDialog<bool>(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: const Text('退出確認'),
+                  content: const Text('このセッションから退出しますか？'),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.of(context).pop(false),
+                      child: const Text('キャンセル'),
+                    ),
+                    TextButton(
+                      onPressed: () => Navigator.of(context).pop(true),
+                      child: const Text('退出する'),
+                    ),
+                  ],
+                ),
+              );
+
+              if (shouldLeave == true && context.mounted) {
+                await execute(
+                  context,
+                  ref,
+                  action: () async {
+                    // セッションから退出
+                    final memberController = ref.read(memberControllerProvider);
+                    // セッション情報からsessionIdを取得
+                    final sessionAsync = ref.read(watchSessionProvider(roomId));
+                    final session = sessionAsync.value;
+                    if (session != null) {
+                      await memberController.leaveSession(session.id!);
+                    }
+                  },
+                  onComplete: () async {
+                    // ホームに戻る
+                    if (context.mounted) {
+                      const HomePageRoute().go(context);
+                    }
+                  },
+                  onExceptionCatch: (e) async {
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('退出に失敗しました: $e')),
+                      );
+                    }
+                  },
+                );
+              }
             },
             icon: const Icon(Icons.exit_to_app),
           ),
