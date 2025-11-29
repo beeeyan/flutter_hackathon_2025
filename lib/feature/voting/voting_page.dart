@@ -38,6 +38,9 @@ class VotingPage extends HookConsumerWidget {
     // 自分のメンバー情報を監視（被投票数の変化検知用）
     final myMemberAsync = ref.watch(myMemberStreamProvider(qrCode));
 
+    // 自分のUID
+    final myUid = ref.watch(currentUserUidProvider);
+
     // ゲームのタップコールバックを設定
     useEffect(
       () {
@@ -54,12 +57,12 @@ class VotingPage extends HookConsumerWidget {
       () {
         membersAsync.whenData((members) {
           if (game.getAllMemberBodies().isEmpty && members.isNotEmpty) {
-            game.addMembers(members);
+            game.addMembers(members, myUid: myUid);
           }
         });
         return null;
       },
-      [membersAsync],
+      [membersAsync, myUid],
     );
 
     // 自分への投票数が変化したらボールサイズを更新

@@ -11,8 +11,7 @@ import '../../../session/provider/session_provider.dart';
 import 'voting_state.dart';
 
 // =============================================================================
-// Session / Member Providers (モック版)
-// TODO: infra層完成後に実際のFirestoreストリームに差し替え
+// Session / Member Providers
 // =============================================================================
 
 /// 現在参加中のセッションID
@@ -229,59 +228,3 @@ votingStateProvider = StateNotifierProvider.autoDispose
     .family<VotingStateNotifier, VotingState, String>((ref, sessionId) {
       return VotingStateNotifier(ref, sessionId);
     });
-
-// =============================================================================
-// Mock Data
-// =============================================================================
-
-final _mockMembers = [
-  Member(
-    uid: 'mock-user-uid',
-    iconUrl: 'https://i.pravatar.cc/150?img=1',
-    nickname: 'あなた',
-    bio: '自分です',
-    joinedAt: DateTime.now(),
-    lastActiveAt: DateTime.now(),
-  ),
-  Member(
-    uid: 'user-2',
-    iconUrl: 'https://i.pravatar.cc/150?img=2',
-    nickname: 'たろう',
-    bio: 'よろしく！',
-    joinedAt: DateTime.now(),
-    lastActiveAt: DateTime.now(),
-  ),
-  Member(
-    uid: 'user-3',
-    iconUrl: 'https://i.pravatar.cc/150?img=3',
-    nickname: 'はなこ',
-    bio: 'こんにちは',
-    joinedAt: DateTime.now(),
-    lastActiveAt: DateTime.now(),
-  ),
-  Member(
-    uid: 'user-4',
-    iconUrl: 'https://i.pravatar.cc/150?img=4',
-    nickname: 'じろう',
-    bio: 'はじめまして',
-    joinedAt: DateTime.now(),
-    lastActiveAt: DateTime.now(),
-  ),
-  Member(
-    uid: 'user-5',
-    iconUrl: 'https://i.pravatar.cc/150?img=5',
-    nickname: 'さくら',
-    bio: 'どうぞよろしく',
-    joinedAt: DateTime.now(),
-    lastActiveAt: DateTime.now(),
-  ),
-  Member(
-    uid: 'mock-host-uid',
-    iconUrl: 'https://i.pravatar.cc/150?img=6',
-    nickname: 'ホスト',
-    bio: 'ホストです',
-    joinedAt: DateTime.now(),
-    lastActiveAt: DateTime.now(),
-    role: 'host',
-  ),
-];

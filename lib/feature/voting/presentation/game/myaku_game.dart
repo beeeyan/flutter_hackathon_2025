@@ -105,16 +105,19 @@ class MyakuGame extends Forge2DGame with TapCallbacks {
     );
   }
 
-  /// メンバーをゲームに追加
-  Future<void> addMembers(List<Member> members) async {
+  /// メンバーをゲームに追加（自分は除外）
+  Future<void> addMembers(List<Member> members, {required String myUid}) async {
     final screenSize = size;
     final worldWidth = screenSize.x / gameZoom;
+
+    // 自分を除外したメンバーリスト
+    final otherMembers = members.where((m) => m.uid != myUid).toList();
 
     // ボールの配置に使う幅（両端にマージン）
     final usableWidth = worldWidth - MemberBody.baseRadius * 4;
 
-    for (var i = 0; i < members.length; i++) {
-      final member = members[i];
+    for (var i = 0; i < otherMembers.length; i++) {
+      final member = otherMembers[i];
 
       // 横方向は均等に配置し、少しランダムなオフセットを加える
       final baseX = -usableWidth / 2 + (i % 5 + 0.5) * (usableWidth / 5);
