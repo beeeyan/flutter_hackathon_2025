@@ -5,12 +5,13 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../../config/app_sizes.dart';
 import '../../routing/go_router.dart';
 import '../../util/logger.dart';
+import '../../util/page_mixin.dart';
 import '../../widgets/app_filled_button.dart';
 import '../../widgets/app_profile_icon.dart';
 import '../../widgets/app_text_form_field.dart';
 import '../user/infra/user_repository.dart';
 
-class ProfileSetupPage extends HookConsumerWidget {
+class ProfileSetupPage extends HookConsumerWidget with PageMixin {
   const ProfileSetupPage({super.key});
 
   static const name = 'profile_setup';
@@ -32,6 +33,7 @@ class ProfileSetupPage extends HookConsumerWidget {
     final isUploadingIcon = useState<bool>(false);
     final nicknameController = useTextEditingController();
     final bioController = useTextEditingController();
+
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
@@ -227,16 +229,22 @@ class ProfileSetupPage extends HookConsumerWidget {
                           bioController.value.text.isEmpty
                       ? null
                       : () async {
-                          await ref
-                              .read(userRepositoryProvider)
-                              .createUser(
-                                iconUrl: selectedIconUrl.value!,
-                                nickname: nicknameController.text,
-                                bio: bioController.text,
-                              );
-                          if (context.mounted) {
-                            const HomePageRoute().go(context);
-                          }
+                          await execute(
+                            context,
+                            ref,
+                            action: () async {
+                              await ref
+                                  .read(userRepositoryProvider)
+                                  .createUser(
+                                    iconUrl: selectedIconUrl.value!,
+                                    nickname: nicknameController.text,
+                                    bio: bioController.text,
+                                  );
+                            },
+                            onComplete: () async {
+                              const HomePageRoute().go(context);
+                            },
+                          );
                         },
                   text: '設定を保存してはじめる',
                 ),

@@ -9,6 +9,7 @@ import 'config/theme/theme.dart';
 import 'enum/flavor.dart';
 import 'feature/auth/infra/auth_repository.dart';
 import 'routing/go_router.dart';
+import 'util/loading_state_provider.dart';
 import 'util/logger.dart';
 
 void main() async {
@@ -38,12 +39,29 @@ class MyApp extends ConsumerWidget {
       minTextAdapt: true,
       splitScreenMode: true,
       builder: (context, child) {
+        final isLoading = ref.watch(loadingStateProvider);
         return MaterialApp.router(
           title: 'Flutter Demo',
           theme: lightTheme(),
           // アプリ内文字サイズを固定（本体設定の影響を受けない）
           builder: (context, child) {
-            return MediaQuery.withNoTextScaling(child: child!);
+            return MediaQuery.withNoTextScaling(
+              child: GestureDetector(
+                onTap: () => primaryFocus?.unfocus(),
+                child: Stack(
+                  children: [
+                    child!,
+                    if (isLoading)
+                      ColoredBox(
+                        color: const Color(0xFF000000).withValues(alpha: 0.7),
+                        child: const Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            );
           },
           routerConfig: ref.watch(goRouterProvider),
         );
