@@ -26,6 +26,7 @@ dependencies:
   json_annotation: ^4.9.0
   material_symbols_icons: ^4.2805.1
   mobile_scanner: ^7.1.3
+  qr_flutter: ^4.1.0
   roggle: ^0.4.2+1
 
 dev_dependencies:
