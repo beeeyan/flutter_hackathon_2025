@@ -21,6 +21,7 @@ class SessionRepository {
     try {
       debugPrint('Creating new session with name: $sessionName');
       
+      // TODO(beeeyan): 他とuidの取り出し方が異なる気はするので最終確認
       final user = FirebaseAuth.instance.currentUser;
       if (user == null) {
         debugPrint('User not authenticated');
