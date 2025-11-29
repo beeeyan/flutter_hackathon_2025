@@ -28,16 +28,16 @@ class MemberBody extends BodyComponent {
   final Vector2 _initialPosition;
 
   /// 基本半径（メートル換算）- ワールド座標系での半径
-  static const double baseRadius = 3;
+  static const double baseRadius = 4.5;
 
   /// 現在の半径
   double currentRadius = baseRadius;
 
   /// 最大半径（上限）
-  static const double maxRadius = 6;
+  static const double maxRadius = 9;
 
   /// 巨大化係数
-  static const double growthFactor = 0.075;
+  static const double growthFactor = 0.045;
 
   /// ボディを所有していることを示すフラグ
   bool _bodyCreated = false;

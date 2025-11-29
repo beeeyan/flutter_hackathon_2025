@@ -13,7 +13,7 @@ import 'pulse_effect.dart';
 class MyakuGame extends Forge2DGame with TapCallbacks {
   MyakuGame()
     : super(
-        gravity: Vector2(0, 30),
+        gravity: Vector2(0, 0.5),
         zoom: 15,
       );
 
@@ -35,12 +35,35 @@ class MyakuGame extends Forge2DGame with TapCallbacks {
   /// ズーム値
   static const double gameZoom = 15;
 
+  /// ソフトバウンダリの上限Y座標
+  double _softBoundaryY = 0;
+
   @override
   Future<void> onLoad() async {
     await super.onLoad();
 
-    // 壁を生成（左、右、下）
+    // ソフトバウンダリのY座標を設定（画面上端より少し下）
+    final worldHeight = size.y / gameZoom;
+    _softBoundaryY = -worldHeight / 2 + MemberBody.baseRadius * 2;
+
+    // 壁を生成（左、右、下、上）
     await _createBoundaries();
+  }
+
+  @override
+  void update(double dt) {
+    super.update(dt);
+
+    // ソフトバウンダリ: 上に行きすぎたボールを押し戻す
+    for (final memberBody in _memberBodies.values) {
+      final pos = memberBody.body.position;
+      if (pos.y < _softBoundaryY) {
+        // 上に行くほど強い下向きの力を適用
+        final overAmount = _softBoundaryY - pos.y;
+        final pushForce = overAmount * 50;
+        memberBody.body.applyForce(Vector2(0, pushForce));
+      }
+    }
   }
 
   /// 壁を生成
@@ -49,10 +72,18 @@ class MyakuGame extends Forge2DGame with TapCallbacks {
     final worldWidth = screenSize.x / gameZoom;
     final worldHeight = screenSize.y / gameZoom;
 
+    // 上壁（安全のため）
+    await world.add(
+      _WallBody(
+        start: Vector2(-worldWidth / 2, -worldHeight / 2),
+        end: Vector2(worldWidth / 2, -worldHeight / 2),
+      ),
+    );
+
     // 左壁
     await world.add(
       _WallBody(
-        start: Vector2(-worldWidth / 2, -worldHeight),
+        start: Vector2(-worldWidth / 2, -worldHeight / 2),
         end: Vector2(-worldWidth / 2, worldHeight / 2),
       ),
     );
@@ -60,7 +91,7 @@ class MyakuGame extends Forge2DGame with TapCallbacks {
     // 右壁
     await world.add(
       _WallBody(
-        start: Vector2(worldWidth / 2, -worldHeight),
+        start: Vector2(worldWidth / 2, -worldHeight / 2),
         end: Vector2(worldWidth / 2, worldHeight / 2),
       ),
     );
@@ -90,9 +121,11 @@ class MyakuGame extends Forge2DGame with TapCallbacks {
       final randomOffset = (_random.nextDouble() - 0.5) * MemberBody.baseRadius;
       final x = baseX + randomOffset;
 
-      // 縦方向は行ごとに分けて配置（5個ずつ）
+      // 縦方向は画面中央付近から配置
       final row = i ~/ 5;
-      final y = -10.0 - (row * 5.0) - _random.nextDouble() * 2;
+      final y =
+          (row * MemberBody.baseRadius * 2.5) +
+          (_random.nextDouble() - 0.5) * 2;
 
       final memberBody = MemberBody(
         uid: member.uid,
