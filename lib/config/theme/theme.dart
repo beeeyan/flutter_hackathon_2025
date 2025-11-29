@@ -41,5 +41,28 @@ ThemeData lightTheme() {
          .apply(fontFamily: FontFamily.notoSansJP),
        ),
      */
+    scaffoldBackgroundColor: Colors.white,
+    appBarTheme: AppBarTheme(
+      backgroundColor: Colors.white,
+      titleTextStyle: appTextStyles.textMain.copyWith(
+        fontSize: 24,
+        fontWeight: FontWeight.w500,
+        color: Colors.black,
+      ),
+    ),
+    filledButtonTheme: FilledButtonThemeData(
+      style: FilledButton.styleFrom(
+        backgroundColor: const Color(0xFF030213),
+        foregroundColor: Colors.white,
+        textStyle: appTextStyles.textMain.copyWith(
+          fontSize: 16,
+          fontWeight: FontWeight.w500,
+          color: Colors.white,
+        ),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+        ),
+      ),
+    ),
   );
 }
