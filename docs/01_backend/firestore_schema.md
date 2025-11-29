@@ -44,8 +44,8 @@ sessions/{sessionId}/members/{uid}   # セッション参加メンバー
 }
 ```
 
-waiting : マッチングが始まっていない状態
-active : マッチング中の状態
+waiting : 投票が始まっていない状態
+active : 投票中の状態
 result : 結果表示中の状態
   
 タイマーは、各端末で計測する。
@@ -92,28 +92,23 @@ result : 結果表示中の状態
 
 1. **ユーザープロフィール追加**
    - `users/{uid}` にデータ追加
-   - デフォルトアイコンの場合：`defaultIcons` コレクションから選択
 
-2. **デフォルトアイコン管理**
-   - `defaultIcons` コレクションからアイコン一覧を取得
-   - カテゴリ別・順序別での表示が可能
-
-3. **QRコード発行**
+2. **QRコード発行**
    - `sessions/{sessionId}` にデータ作成
    - `status`: `"waiting"`
 
-4. **QRコード読み込み**
+3. **QRコード読み込み**
    - `sessions/{sessionId}/members/{uid}` にデータ作成
 
-5. **開始ボタン押下**
+4. **開始ボタン押下**
    - `sessions/{sessionId}` を更新
    - `status`: `"active"`
 
-6. **アイコンタップ**
+5. **アイコンタップ**
    - `sessions/{sessionId}/members/{targetUid}` の 
    アイコンに表示されている人の`bySender`と  
    自分の`sended`を更新する
 
-7. **ホストが終了ボタン押下**
+6. **ホストが終了ボタン押下**
    - `sessions/{sessionId}` を更新
    - `status`: `"result"`
