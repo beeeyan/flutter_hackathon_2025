@@ -50,7 +50,8 @@ class JoinRoomPage extends HookConsumerWidget {
                       child: Stack(
                         children: [
                           MobileScanner(
-                            controller: scannerController,                            onDetect: (capture) async {
+                            controller: scannerController,
+                            onDetect: (capture) async {
                               final barcodes = capture.barcodes;
                               for (final barcode in barcodes) {
                                 if (barcode.rawValue != null) {
@@ -138,7 +139,11 @@ class JoinRoomPage extends HookConsumerWidget {
   }
 
   /// セッション参加処理
-  Future<void> _joinSession(BuildContext context, WidgetRef ref, String qrCode) async {
+  Future<void> _joinSession(
+    BuildContext context,
+    WidgetRef ref,
+    String qrCode,
+  ) async {
     try {
       // 現在のユーザー情報を取得
       final currentUser = await ref.read(currentUserProvider.future);

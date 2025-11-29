@@ -133,10 +133,13 @@ RouteBase get $votingPageRoute => GoRouteData.$route(
 
 mixin $VotingPageRoute on GoRouteData {
   static VotingPageRoute _fromState(GoRouterState state) =>
-      const VotingPageRoute();
+      VotingPageRoute(qrCode: state.uri.queryParameters['qr-code']!);
+
+  VotingPageRoute get _self => this as VotingPageRoute;
 
   @override
-  String get location => GoRouteData.$location('/voting');
+  String get location =>
+      GoRouteData.$location('/voting', queryParams: {'qr-code': _self.qrCode});
 
   @override
   void go(BuildContext context) => context.go(location);

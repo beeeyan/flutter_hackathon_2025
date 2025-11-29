@@ -3,8 +3,11 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+import '../../../auth/application/state/auth_state.dart';
 import '../../../session/domain/member.dart';
 import '../../../session/domain/session.dart';
+import '../../../session/provider/member_provider.dart';
+import '../../../session/provider/session_provider.dart';
 import 'voting_state.dart';
 
 // =============================================================================
@@ -13,66 +16,69 @@ import 'voting_state.dart';
 // =============================================================================
 
 /// 現在参加中のセッションID
-final currentSessionIdProvider = StateProvider<String>((ref) {
-  return 'mock-session-id';
+final currentSessionIdProvider = StateProviderFamily<String, String>((
+  ref,
+  qrCode,
+) {
+  return ref.watch(watchSessionProvider(qrCode)).value!.id!;
 });
 
 /// 現在のユーザーUID
-/// TODO: 実際のauthStateProviderから取得するように変更
 final currentUserUidProvider = StateProvider<String>((ref) {
-  return 'mock-user-uid';
+  return ref.watch(authStateProvider).value!.uid;
 });
 
-/// セッションのリアルタイム監視（モック版）
-final sessionStreamProvider = StreamProvider<Session>((ref) {
-  // TODO: infra層完成後に以下のように差し替え
-  // final sessionId = ref.watch(currentSessionIdProvider);
-  // final repository = ref.watch(votingRepositoryProvider);
-  // return repository.streamSession(sessionId);
-
-  return Stream.value(
-    Session(
-      id: 'mock-session-id',
-      name: 'テストセッション',
-      hostUid: 'mock-host-uid',
-      qrCode: 'SES-TEST-1234',
-      status: 'active',
-      createdAt: DateTime.now(),
-      updatedAt: DateTime.now(),
-    ),
+/// セッションのリアルタイム監視
+final sessionStreamProvider = StreamProviderFamily<Session?, String>((
+  ref,
+  qrCode,
+) {
+  final res = ref.watch(watchSessionProvider(qrCode));
+  return res.when(
+    data: Stream.value,
+    loading: () => Stream.value(null),
+    error: (_, __) => Stream.value(null),
   );
 });
 
-/// メンバー一覧のリアルタイム監視（モック版）
-final membersStreamProvider = StreamProvider<List<Member>>((ref) {
-  // TODO: infra層完成後に以下のように差し替え
-  // final sessionId = ref.watch(currentSessionIdProvider);
-  // final repository = ref.watch(votingRepositoryProvider);
-  // return repository.streamMembers(sessionId);
+/// メンバー一覧のリアルタイム監視
+final membersStreamProvider = StreamProviderFamily<List<Member>, String>((
+  ref,
+  qrCode,
+) {
+  final sessionId = ref.watch(currentSessionIdProvider(qrCode));
+  final res = ref.watch(watchActiveSessionMembersProvider(sessionId));
 
-  return Stream.value(_mockMembers);
+  return res.when(
+    data: (members) {
+      return Stream.value(members);
+    },
+    loading: () => Stream.value([]),
+    error: (_, __) => Stream.value([]),
+  );
 });
 
-/// 自分のメンバー情報のリアルタイム監視（モック版）
-final myMemberStreamProvider = StreamProvider<Member>((ref) {
-  // TODO: infra層完成後に以下のように差し替え
-  // final sessionId = ref.watch(currentSessionIdProvider);
-  // final myUid = ref.watch(currentUserUidProvider);
-  // final repository = ref.watch(votingRepositoryProvider);
-  // return repository.streamMyMember(sessionId, myUid);
+/// 自分のメンバー情報のリアルタイム監視
+final myMemberStreamProvider = StreamProviderFamily<Member?, String>((
+  ref,
+  qrCode,
+) {
+  final sessionId = ref.watch(currentSessionIdProvider(qrCode));
 
-  final myUid = ref.watch(currentUserUidProvider);
-  return Stream.value(
-    _mockMembers.firstWhere(
-      (m) => m.uid == myUid,
-      orElse: () => _mockMembers.first,
-    ),
+  final res = ref.watch(watchMyMemberProvider(sessionId));
+
+  return res.when(
+    data: (member) {
+      return Stream.value(member);
+    },
+    loading: () => Stream.value(null),
+    error: (_, __) => Stream.value(null),
   );
 });
 
 /// 現在のユーザーがホストかどうか
-final isHostProvider = Provider<bool>((ref) {
-  final session = ref.watch(sessionStreamProvider).valueOrNull;
+final isHostProvider = ProviderFamily<bool, String>((ref, qrCode) {
+  final session = ref.watch(sessionStreamProvider(qrCode)).valueOrNull;
   final myUid = ref.watch(currentUserUidProvider);
   return session?.hostUid == myUid;
 });

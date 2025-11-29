@@ -8,10 +8,12 @@ import 'application/state/voting_provider.dart';
 import 'presentation/game/myaku_game.dart';
 
 class VotingPage extends HookConsumerWidget {
-  const VotingPage({super.key});
+  const VotingPage({super.key, required this.qrCode});
 
   static const name = 'voting';
   static const path = '/voting';
+
+  final String qrCode;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -22,16 +24,16 @@ class VotingPage extends HookConsumerWidget {
     final votingState = ref.watch(votingStateProvider);
 
     // メンバー一覧を監視
-    final membersAsync = ref.watch(membersStreamProvider);
+    final membersAsync = ref.watch(membersStreamProvider(qrCode));
 
     // セッション状態を監視（status変更で画面遷移）
-    final sessionAsync = ref.watch(sessionStreamProvider);
+    final sessionAsync = ref.watch(sessionStreamProvider(qrCode));
 
     // ホストかどうか
-    final isHost = ref.watch(isHostProvider);
+    final isHost = ref.watch(isHostProvider(qrCode));
 
     // 自分のメンバー情報を監視（被投票数の変化検知用）
-    final myMemberAsync = ref.watch(myMemberStreamProvider);
+    final myMemberAsync = ref.watch(myMemberStreamProvider(qrCode));
 
     // ゲームのタップコールバックを設定
     useEffect(
@@ -61,7 +63,9 @@ class VotingPage extends HookConsumerWidget {
     useEffect(
       () {
         myMemberAsync.whenData((myMember) {
-          game.updateAllMemberSizes(myMember.bySender);
+          if (myMember != null) {
+            game.updateAllMemberSizes(myMember.bySender);
+          }
         });
         return null;
       },
@@ -83,7 +87,7 @@ class VotingPage extends HookConsumerWidget {
     useEffect(
       () {
         sessionAsync.whenData((session) {
-          if (session.status == 'result') {
+          if (session != null && session.status == 'result') {
             const ResultPageRoute().go(context);
           }
         });

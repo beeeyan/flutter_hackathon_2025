@@ -352,7 +352,7 @@ class RoomLobbyPage extends ConsumerWidget {
                 child: isHost
                     ? AppFilledButton(
                         onPressed: () {
-                          const VotingPageRoute().go(context);
+                          VotingPageRoute(qrCode: qrCode).go(context);
                         },
                         text: '投票をスタートする！',
                         height: 56,

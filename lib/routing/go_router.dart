@@ -102,11 +102,13 @@ class RoomLobbyPageRoute extends GoRouteData with $RoomLobbyPageRoute {
   name: VotingPage.name,
 )
 class VotingPageRoute extends GoRouteData with $VotingPageRoute {
-  const VotingPageRoute();
+  const VotingPageRoute({required this.qrCode});
+
+  final String qrCode;
 
   @override
   Page<void> buildPage(BuildContext context, GoRouterState state) {
-    return buildNoAnimationTransition(const VotingPage());
+    return buildNoAnimationTransition(VotingPage(qrCode: qrCode));
   }
 }
 
