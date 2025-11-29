@@ -76,7 +76,11 @@ class ResultPage extends HookConsumerWidget {
       ),
       body: isMatched
           ? _buildMatchBody(context, matchedUserName, matchedUserIconUrl)
-          : _buildNoMatchBody(context),
+          : _buildNoMatchBody(
+              context,
+              myMemberAsync.value,
+              membersAsync.value,
+            ),
     );
   }
 
@@ -206,50 +210,13 @@ class ResultPage extends HookConsumerWidget {
     );
   }
 
-  Widget _buildNoMatchBody(BuildContext context) {
+  Widget _buildNoMatchBody(
+    BuildContext context,
+    Member? myMember,
+    List<Member>? members,
+  ) {
     final appColors = Theme.of(context).appColors;
     final appTextStyles = Theme.of(context).appTextStyles;
-
-    // TODO: 実際の投票データを取得
-    final voters = useState<List<Voter>>([
-      const Voter(
-        uid: '1',
-        nickname: 'タロウ',
-        iconUrl: 'https://i.pravatar.cc/150?img=1',
-        voteCount: 5,
-      ),
-      const Voter(
-        uid: '2',
-        nickname: 'ハナコ',
-        iconUrl: 'https://i.pravatar.cc/150?img=2',
-        voteCount: 3,
-      ),
-      const Voter(
-        uid: '3',
-        nickname: 'ケン',
-        iconUrl: 'https://i.pravatar.cc/150?img=3',
-        voteCount: 2,
-      ),
-      const Voter(
-        uid: '1',
-        nickname: 'タロウ',
-        iconUrl: 'https://i.pravatar.cc/150?img=1',
-        voteCount: 5,
-      ),
-      const Voter(
-        uid: '2',
-        nickname: 'ハナコ',
-        iconUrl: 'https://i.pravatar.cc/150?img=2',
-        voteCount: 3,
-      ),
-      const Voter(
-        uid: '3',
-        nickname: 'ケン',
-        iconUrl: 'https://i.pravatar.cc/150?img=3',
-        voteCount: 2,
-      ),
-    ]);
-
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: AppSizes.s24),
@@ -332,8 +299,16 @@ class ResultPage extends HookConsumerWidget {
                           bottomRight: Radius.circular(8),
                         ),
                       ),
-                      child: voters.value.isNotEmpty
-                          ? _buildVotersList(context, voters.value)
+                      child:
+                          myMember != null &&
+                              myMember.sended.isNotEmpty &&
+                              members != null &&
+                              members.isNotEmpty
+                          ? _buildVotersList(
+                              context,
+                              myMember,
+                              members,
+                            )
                           : _buildNoVotesMessage(context),
                     ),
                   ),
@@ -373,9 +348,39 @@ class ResultPage extends HookConsumerWidget {
     );
   }
 
-  Widget _buildVotersList(BuildContext context, List<Voter> voters) {
+  Widget _buildVotersList(
+    BuildContext context,
+    Member myMember,
+    List<Member> members,
+  ) {
     final appColors = Theme.of(context).appColors;
     final appTextStyles = Theme.of(context).appTextStyles;
+
+    final voters = members.map((member) {
+      // 自分は除外
+      if (member.uid == myMember.uid) {
+        return null;
+      }
+
+      // 自分に投票していない人は除外
+      if (member.sended[myMember.uid] == null) {
+        return null;
+      }
+
+      // 自分への投票数を取得
+      return Voter(
+        uid: member.uid,
+        nickname: member.nickname,
+        iconUrl: member.iconUrl,
+        voteCount: member.sended[myMember.uid]!,
+      );
+    }).toList();
+
+    // votersを投票数で降順にソート
+    if (voters.isNotEmpty) {
+      voters.sort((a, b) => (b?.voteCount ?? 0).compareTo(a?.voteCount ?? 0));
+    }
+
     return ListView.separated(
       padding: const EdgeInsets.all(AppSizes.s16),
       itemCount: voters.length,
@@ -390,7 +395,7 @@ class ResultPage extends HookConsumerWidget {
         return Row(
           children: [
             AppProfileIcon(
-              imageUrl: voter.iconUrl,
+              imageUrl: voter?.iconUrl ?? '',
               size: 48.w,
             ),
             SizedBox(width: 12.w),
@@ -399,7 +404,7 @@ class ResultPage extends HookConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    voter.nickname,
+                    voter?.nickname ?? '',
                     style: appTextStyles.t16Bold.copyWith(
                       color: appColors.textMain,
                     ),
@@ -414,7 +419,7 @@ class ResultPage extends HookConsumerWidget {
                       ),
                       SizedBox(width: 4.w),
                       Text(
-                        '${voter.voteCount}回',
+                        '${voter?.voteCount ?? ''}回',
                         style: appTextStyles.t14Regular.copyWith(
                           color: appColors.textSecondary,
                         ),
