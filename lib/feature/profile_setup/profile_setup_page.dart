@@ -36,128 +36,129 @@ class ProfileSetupPage extends HookConsumerWidget {
         appBar: AppBar(
           title: const Text('プロフィール設定'),
         ),
-        body: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: AppSizes.s24),
-          child: Column(
-            children: [
-              AppGaps.g32,
+        body: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: AppSizes.s24),
+            child: Column(
+              children: [
+                AppGaps.g32,
 
-              // アバター画像
-              AppProfileIcon(
-                imageUrl: selectedIconUrl.value,
-                size: 128,
-              ),
+                // アバター画像
+                AppProfileIcon(
+                  imageUrl: selectedIconUrl.value,
+                  size: 128,
+                ),
 
-              AppGaps.g32,
+                AppGaps.g32,
 
-              const Align(
-                alignment: Alignment.centerLeft,
-                child: Text('またはデフォルトから選択'),
-              ),
+                const Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text('またはデフォルトから選択'),
+                ),
 
-              AppGaps.g8,
+                AppGaps.g8,
 
-              // Wrapで6つの画像を表示
-              Wrap(
-                crossAxisAlignment: WrapCrossAlignment.center,
-                spacing: AppSizes.s8,
-                children: List.generate(iconUrls.length, (index) {
-                  // 選択された画像の場合は枠を表示
-                  // 選択されていない画像はうっすら白いブラーをかける
-                  final isSelected = iconUrls[index] == selectedIconUrl.value;
-                  return GestureDetector(
-                    onTap: () {
-                      selectedIconUrl.value = iconUrls[index];
-                    },
-                    child: Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        // 画像（常に48x48）
-                        AppProfileIcon(
-                          imageUrl: iconUrls[index],
-                          size: AppSizes.s48,
-                        ),
-                        // 選択時：2pxの余白を設けた枠線（外側に表示）
-                        if (isSelected)
-                          Container(
-                            width: AppSizes.s48 + AppSizes.s4, // 48 + 2*2 = 52
-                            height: AppSizes.s48 + AppSizes.s4,
-                            decoration: BoxDecoration(
-                              border: Border.all(
-                                width: 2,
-                              ),
-                              shape: BoxShape.circle,
-                            ),
-                          ),
-                        // 未選択時：白いブラー
-                        if (!isSelected)
-                          Container(
-                            width: AppSizes.s48,
-                            height: AppSizes.s48,
-                            decoration: BoxDecoration(
-                              color: Colors.white.withValues(alpha: 0.3),
-                              shape: BoxShape.circle,
-                            ),
-                          ),
-                      ],
-                    ),
-                  );
-                }),
-              ),
-
-              AppGaps.g32,
-
-              // nickname入力フォーム
-              const Align(
-                alignment: Alignment.centerLeft,
-                child: Text('ニックネーム'),
-              ),
-
-              AppTextFormField(
-                controller: nicknameController,
-                hintText: '例：タロウ',
-              ),
-
-              AppGaps.g32,
-
-              // bio入力フォーム
-              const Align(
-                alignment: Alignment.centerLeft,
-                child: Text('自己紹介'),
-              ),
-
-              AppTextFormField(
-                controller: bioController,
-                hintText: '任意（100文字以内）',
-                maxLines: null,
-                maxLength: 100,
-                minHeight: 120,
-              ),
-
-              const Spacer(),
-
-              AppFilledButton(
-                onPressed:
-                    nicknameController.value.text.isEmpty ||
-                        bioController.value.text.isEmpty
-                    ? null
-                    : () async {
-                        await ref
-                            .read(userRepositoryProvider)
-                            .createUser(
-                              iconUrl: selectedIconUrl.value,
-                              nickname: nicknameController.text,
-                              bio: bioController.text,
-                            );
-                        if (context.mounted) {
-                          const HomePageRoute().go(context);
-                        }
+                // Wrapで6つの画像を表示
+                Wrap(
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  spacing: AppSizes.s8,
+                  children: List.generate(iconUrls.length, (index) {
+                    // 選択された画像の場合は枠を表示
+                    // 選択されていない画像はうっすら白いブラーをかける
+                    final isSelected = iconUrls[index] == selectedIconUrl.value;
+                    return GestureDetector(
+                      onTap: () {
+                        selectedIconUrl.value = iconUrls[index];
                       },
-                text: '設定を保存してはじめる',
-              ),
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          // 画像（常に48x48）
+                          AppProfileIcon(
+                            imageUrl: iconUrls[index],
+                            size: AppSizes.s48,
+                          ),
+                          // 選択時：2pxの余白を設けた枠線（外側に表示）
+                          if (isSelected)
+                            Container(
+                              width:
+                                  AppSizes.s48 + AppSizes.s4, // 48 + 2*2 = 52
+                              height: AppSizes.s48 + AppSizes.s4,
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                  width: 2,
+                                ),
+                                shape: BoxShape.circle,
+                              ),
+                            ),
+                          // 未選択時：白いブラー
+                          if (!isSelected)
+                            Container(
+                              width: AppSizes.s48,
+                              height: AppSizes.s48,
+                              decoration: BoxDecoration(
+                                color: Colors.white.withValues(alpha: 0.3),
+                                shape: BoxShape.circle,
+                              ),
+                            ),
+                        ],
+                      ),
+                    );
+                  }),
+                ),
 
-              AppGaps.g64,
-            ],
+                AppGaps.g32,
+
+                // nickname入力フォーム
+                const Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text('ニックネーム'),
+                ),
+
+                AppTextFormField(
+                  controller: nicknameController,
+                  hintText: '例：タロウ',
+                ),
+
+                AppGaps.g32,
+
+                // bio入力フォーム
+                const Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text('自己紹介'),
+                ),
+
+                AppTextFormField(
+                  controller: bioController,
+                  hintText: '任意（100文字以内）',
+                  maxLines: null,
+                  maxLength: 100,
+                  minHeight: 120,
+                ),
+
+                AppFilledButton(
+                  onPressed:
+                      nicknameController.value.text.isEmpty ||
+                          bioController.value.text.isEmpty
+                      ? null
+                      : () async {
+                          await ref
+                              .read(userRepositoryProvider)
+                              .createUser(
+                                iconUrl: selectedIconUrl.value,
+                                nickname: nicknameController.text,
+                                bio: bioController.text,
+                              );
+                          if (context.mounted) {
+                            const HomePageRoute().go(context);
+                          }
+                        },
+                  text: '設定を保存してはじめる',
+                ),
+
+                AppGaps.g64,
+              ],
+            ),
           ),
         ),
       ),
