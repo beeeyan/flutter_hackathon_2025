@@ -15,8 +15,12 @@ abstract class VotingState with _$VotingState {
     /// タイムアップフラグ
     @Default(false) bool isTimeUp,
 
-    /// 送信待ちキュー {targetUid: count}
+    /// 送信待ちキュー {targetUid: 今回の増分count}
     @Default({}) Map<String, int> sendQueue,
+
+    /// 累積送信カウント {targetUid: 累積count}
+    /// tapUserに渡すための累積値を管理
+    @Default({}) Map<String, int> sentCounts,
 
     /// 最後にキューをフラッシュした時間
     DateTime? lastFlushTime,

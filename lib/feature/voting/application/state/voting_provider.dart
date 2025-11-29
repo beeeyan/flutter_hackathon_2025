@@ -89,12 +89,12 @@ final isHostProvider = ProviderFamily<bool, String>((ref, qrCode) {
 
 /// 投票状態管理のNotifier
 class VotingStateNotifier extends StateNotifier<VotingState> {
-  VotingStateNotifier(this._ref) : super(const VotingState()) {
+  VotingStateNotifier(this._ref, this._sessionId) : super(const VotingState()) {
     _startTimer();
   }
 
-  // ignore: unused_field
   final Ref _ref;
+  final String _sessionId;
   Timer? _countdownTimer;
   Timer? _flushTimer;
 
@@ -163,22 +163,44 @@ class VotingStateNotifier extends StateNotifier<VotingState> {
   }
 
   /// キューをFirestoreに送信
-  void _flushQueue() {
+  Future<void> _flushQueue() async {
     if (state.sendQueue.isEmpty) return;
 
     final queueToSend = Map<String, int>.from(state.sendQueue);
+    final newSentCounts = Map<String, int>.from(state.sentCounts);
 
-    // TODO: infra層完成後に以下のように実装
-    // final sessionId = _ref.read(currentSessionIdProvider);
-    // final repository = _ref.read(votingRepositoryProvider);
-    // repository.incrementVotes(sessionId, queueToSend);
+    // 累積カウントを更新
+    for (final entry in queueToSend.entries) {
+      newSentCounts[entry.key] = (newSentCounts[entry.key] ?? 0) + entry.value;
+    }
 
-    debugPrint('📤 Flushing vote queue: $queueToSend');
-
+    // 状態を先に更新（キューをクリア）
     state = state.copyWith(
       sendQueue: {},
+      sentCounts: newSentCounts,
       lastFlushTime: DateTime.now(),
     );
+
+    debugPrint('📤 Flushing vote queue: $queueToSend');
+    debugPrint('📊 Total sent counts: $newSentCounts');
+
+    // Firestoreに送信（各ターゲットごとに累積カウントを送信）
+    try {
+      final memberController = _ref.read(memberControllerProvider);
+      for (final entry in newSentCounts.entries) {
+        // キューにあったターゲットのみ更新
+        if (queueToSend.containsKey(entry.key)) {
+          await memberController.tapUser(
+            sessionId: _sessionId,
+            targetUid: entry.key,
+            allTapCounts: entry.value,
+          );
+        }
+      }
+      debugPrint('✅ Successfully flushed votes to Firestore');
+    } catch (e) {
+      debugPrint('❌ Failed to flush votes: $e');
+    }
   }
 
   /// インタラクション停止
@@ -197,11 +219,15 @@ class VotingStateNotifier extends StateNotifier<VotingState> {
   }
 }
 
-/// 投票状態Provider
-final AutoDisposeStateNotifierProvider<VotingStateNotifier, VotingState>
-votingStateProvider =
-    StateNotifierProvider.autoDispose<VotingStateNotifier, VotingState>((ref) {
-      return VotingStateNotifier(ref);
+/// 投票状態Provider（sessionIdをパラメータとして受け取る）
+final AutoDisposeStateNotifierProviderFamily<
+  VotingStateNotifier,
+  VotingState,
+  String
+>
+votingStateProvider = StateNotifierProvider.autoDispose
+    .family<VotingStateNotifier, VotingState, String>((ref, sessionId) {
+      return VotingStateNotifier(ref, sessionId);
     });
 
 // =============================================================================

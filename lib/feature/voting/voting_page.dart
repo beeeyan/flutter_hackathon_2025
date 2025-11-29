@@ -20,8 +20,11 @@ class VotingPage extends HookConsumerWidget {
     // ゲームインスタンスを保持
     final game = useMemoized(MyakuGame.new, const []);
 
+    // セッションIDを取得
+    final sessionId = ref.watch(currentSessionIdProvider(qrCode));
+
     // 投票状態を監視
-    final votingState = ref.watch(votingStateProvider);
+    final votingState = ref.watch(votingStateProvider(sessionId));
 
     // メンバー一覧を監視
     final membersAsync = ref.watch(membersStreamProvider(qrCode));
@@ -39,11 +42,11 @@ class VotingPage extends HookConsumerWidget {
     useEffect(
       () {
         game.onTapUserCallback = (uid) {
-          ref.read(votingStateProvider.notifier).onTap(uid);
+          ref.read(votingStateProvider(sessionId).notifier).onTap(uid);
         };
         return null;
       },
-      [game],
+      [game, sessionId],
     );
 
     // メンバー一覧が取得できたらゲームに追加
