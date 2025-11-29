@@ -37,8 +37,8 @@ final sessionStreamProvider = StreamProvider<Session>((ref) {
       hostUid: 'mock-host-uid',
       qrCode: 'SES-TEST-1234',
       status: 'active',
-      joinedAt: DateTime.now(),
-      lastActiveAt: DateTime.now(),
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
     ),
   );
 });
