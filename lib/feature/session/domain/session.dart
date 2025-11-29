@@ -19,5 +19,6 @@ abstract class Session with _$Session {
     @TimestampConverter() required DateTime updatedAt,
   }) = _Session;
 
-  factory Session.fromJson(Map<String, dynamic> json) => _$SessionFromJson(json);
+  factory Session.fromJson(Map<String, dynamic> json) =>
+      _$SessionFromJson(json);
 }

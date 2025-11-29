@@ -7,14 +7,16 @@ import 'package:qr_flutter/qr_flutter.dart';
 
 import '../../config/app_sizes.dart';
 import '../../routing/go_router.dart';
+import '../../util/page_mixin.dart';
 import '../../widgets/app_filled_button.dart';
 import '../../widgets/app_profile_icon.dart';
 import '../auth/application/state/auth_state.dart';
 import '../session/domain/member.dart';
+import '../session/infra/session_repository.dart';
 import '../session/provider/member_provider.dart';
 import '../session/provider/session_provider.dart';
 
-class RoomLobbyPage extends ConsumerWidget {
+class RoomLobbyPage extends ConsumerWidget with PageMixin {
   const RoomLobbyPage({
     super.key,
     required this.qrCode,
@@ -43,6 +45,13 @@ class RoomLobbyPage extends ConsumerWidget {
               child: Text('セッションが見つかりません'),
             ),
           );
+        }
+
+        if (session.status == 'active') {
+          // 投票画面へ遷移
+          if (context.mounted) {
+            VotingPageRoute(qrCode: qrCode).go(context);
+          }
         }
 
         // ホストかどうかを判定（現在のユーザーIDとセッションのhostUidを比較）
@@ -351,8 +360,27 @@ class RoomLobbyPage extends ConsumerWidget {
               child: SafeArea(
                 child: isHost
                     ? AppFilledButton(
-                        onPressed: () {
-                          const VotingPageRoute().go(context);
+                        onPressed: () async {
+                          await execute(
+                            context,
+                            ref,
+                            action: () async {
+                              // セッションステータスを"active"に更新
+                              // これにより参加者全員が投票画面へ遷移する
+                              await ref
+                                  .read(sessionRepositoryProvider)
+                                  .startSession(qrCode);
+                            },
+                            onExceptionCatch: (e) async {
+                              if (context.mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text('開始できませんでした: $e'),
+                                  ),
+                                );
+                              }
+                            },
+                          );
                         },
                         text: '投票をスタートする！',
                         height: 56,
