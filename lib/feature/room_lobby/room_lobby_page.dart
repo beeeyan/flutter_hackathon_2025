@@ -144,7 +144,7 @@ class RoomLobbyPage extends ConsumerWidget with PageMixin {
               children: [
                 Container(
                   width: double.infinity,
-                  color: appColors.containerFill.withValues(alpha: 0.2),
+                  color: appColors.containerFill.withValues(alpha: 0.05),
                   child: Column(
                     children: [
                       AppGaps.g16,
@@ -258,7 +258,11 @@ class RoomLobbyPage extends ConsumerWidget with PageMixin {
                             child: Container(
                               padding: const EdgeInsets.all(12),
                               decoration: BoxDecoration(
-                                color: isMe ? appColors.containerFill : null,
+                                color: isMe
+                                    ? appColors.containerFill.withValues(
+                                        alpha: 0.05,
+                                      )
+                                    : null,
                                 borderRadius: BorderRadius.circular(12),
                                 border: Border.all(
                                   color: appColors.textSecondary,
@@ -296,8 +300,8 @@ class RoomLobbyPage extends ConsumerWidget with PageMixin {
                                                       vertical: AppSizes.s2,
                                                     ),
                                                 decoration: BoxDecoration(
-                                                  color:
-                                                      appColors.containerFill,
+                                                  color: appColors.containerFill
+                                                      .withValues(alpha: 0.1),
                                                   borderRadius:
                                                       BorderRadius.circular(
                                                         10,
@@ -388,7 +392,9 @@ class RoomLobbyPage extends ConsumerWidget with PageMixin {
                     : Container(
                         padding: const EdgeInsets.all(AppSizes.s16),
                         decoration: BoxDecoration(
-                          color: appColors.containerFill,
+                          color: appColors.containerFill.withValues(
+                            alpha: 0.05,
+                          ),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Row(
