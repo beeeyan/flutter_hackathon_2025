@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../config/theme/theme_extension.dart';
+
 /// プロフィール画像を表示するウィジェット
 class AppProfileIcon extends StatelessWidget {
   const AppProfileIcon({
@@ -16,6 +18,7 @@ class AppProfileIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final appColors = Theme.of(context).appColors;
     return Container(
       width: size,
       height: size,
@@ -24,7 +27,7 @@ class AppProfileIcon extends StatelessWidget {
           image: NetworkImage(imageUrl),
           fit: BoxFit.cover,
         ),
-        color: Colors.grey,
+        color: appColors.textSecondary,
         shape: BoxShape.circle,
       ),
     );

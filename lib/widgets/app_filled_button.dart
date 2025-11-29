@@ -23,18 +23,20 @@ class AppFilledButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final appColors = Theme.of(context).appColors;
+    final appTextStyles = Theme.of(context).appTextStyles;
     return SizedBox(
       height: height ?? AppSizes.s48,
       width: double.infinity,
       child: FilledButton(
         onPressed: onPressed,
         style: FilledButton.styleFrom(
-          backgroundColor: backgroundColor ?? const Color(0xFF030213),
+          backgroundColor: backgroundColor ?? appColors.containerFill,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8),
           ),
           side: BorderSide(
-            color: textColor ?? Colors.transparent,
+            color: textColor ?? appColors.white,
           ),
         ),
         child: Row(
@@ -46,10 +48,8 @@ class AppFilledButton extends StatelessWidget {
             ],
             Text(
               text,
-              style: Theme.of(context).appTextStyles.textMain.copyWith(
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-                color: textColor ?? Colors.white,
+              style: appTextStyles.t18Medium.copyWith(
+                color: textColor ?? appColors.white,
               ),
             ),
           ],

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../config/app_sizes.dart';
+import '../config/theme/theme_extension.dart';
 
 class AppOutlinedButton extends StatelessWidget {
   const AppOutlinedButton({
@@ -25,6 +26,8 @@ class AppOutlinedButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final appColors = Theme.of(context).appColors;
+    final appTextStyles = Theme.of(context).appTextStyles;
     return Padding(
       padding: const EdgeInsets.only(bottom: AppSizes.s24),
       child: SizedBox(
@@ -33,9 +36,9 @@ class AppOutlinedButton extends StatelessWidget {
         child: OutlinedButton(
           onPressed: onPressed,
           style: OutlinedButton.styleFrom(
-            backgroundColor: backgroundColor ?? Colors.white,
+            backgroundColor: backgroundColor ?? appColors.white,
             side: BorderSide(
-              color: borderColor ?? const Color(0xFFE0E0E0),
+              color: borderColor ?? appColors.textSecondary,
             ),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(8),
@@ -50,10 +53,8 @@ class AppOutlinedButton extends StatelessWidget {
               ],
               Text(
                 text,
-                style: TextStyle(
-                  fontSize: 16.sp,
-                  fontWeight: FontWeight.w500,
-                  color: textColor ?? const Color(0xFF2C2C2C),
+                style: appTextStyles.t18Medium.copyWith(
+                  color: textColor ?? appColors.textMain,
                 ),
               ),
             ],

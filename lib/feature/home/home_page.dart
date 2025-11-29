@@ -4,6 +4,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
 import '../../config/app_sizes.dart';
+import '../../config/theme/theme_extension.dart';
 import '../../routing/go_router.dart';
 import '../../widgets/app_filled_button.dart';
 import '../../widgets/app_profile_icon.dart';
@@ -19,6 +20,8 @@ class HomePage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final appColors = Theme.of(context).appColors;
+    final appTextStyles = Theme.of(context).appTextStyles;
     final userAsync = ref.watch(currentUserProvider);
     return Scaffold(
       body: SafeArea(
@@ -32,13 +35,23 @@ class HomePage extends ConsumerWidget {
                     imageUrl: user?.iconUrl ?? '',
                     size: 56.w,
                   ),
-                  title: Text(user?.nickname ?? ''),
-                  subtitle: Text(user?.bio ?? ''),
+                  title: Text(
+                    user?.nickname ?? '',
+                    style: appTextStyles.t14Medium.copyWith(
+                      color: appColors.textMain,
+                    ),
+                  ),
+                  subtitle: Text(
+                    user?.bio ?? '',
+                    style: appTextStyles.t12Regular.copyWith(
+                      color: appColors.textSecondary,
+                    ),
+                  ),
                 ),
                 AppGaps.g8,
                 Divider(
                   height: 1,
-                  color: Colors.grey.withValues(alpha: 0.3),
+                  color: appColors.textSecondary,
                 ),
 
                 // Main content - Myaku logo and branding
@@ -52,38 +65,33 @@ class HomePage extends ConsumerWidget {
                           width: 120.w,
                           height: 120.w,
                           decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: appColors.white,
                             shape: BoxShape.circle,
                             border: Border.all(
-                              color: const Color(0xFF2C2C2C),
+                              color: appColors.black,
                               width: 2,
                             ),
                           ),
                           child: Icon(
                             Symbols.favorite,
                             size: 64.w,
-                            color: const Color(0xFF2C2C2C),
+                            color: appColors.black,
                           ),
                         ),
                         SizedBox(height: 24.h),
                         // App name
                         Text(
                           'Myaku',
-                          style: TextStyle(
-                            fontSize: 32.sp,
-                            fontWeight: FontWeight.bold,
-                            color: const Color(0xFF1C1C1C),
-                            letterSpacing: -0.5,
+                          style: appTextStyles.t48Black.copyWith(
+                            color: appColors.textMain,
                           ),
                         ),
                         SizedBox(height: 8.h),
                         // Tagline
                         Text(
                           'TAP TO FEEL THE HEAT',
-                          style: TextStyle(
-                            fontSize: 12.sp,
-                            fontWeight: FontWeight.w400,
-                            color: const Color(0xFF8E8E8E),
+                          style: appTextStyles.t12Medium.copyWith(
+                            color: appColors.textSecondary,
                             letterSpacing: 1.2,
                           ),
                         ),
@@ -96,27 +104,34 @@ class HomePage extends ConsumerWidget {
                   padding: EdgeInsets.all(24.w),
                   child: Column(
                     children: [
-                      AppFilledButton(                        onPressed: () async {
+                      AppFilledButton(
+                        onPressed: () async {
                           try {
                             final controller = ref.read(
                               sessionControllerProvider,
                             );
                             // セッションを作成してQRコードを取得
                             final session = await controller.issueQRCode();
-                            
+
                             // 現在のユーザー情報を取得
-                            final currentUser = await ref.read(currentUserProvider.future);
+                            final currentUser = await ref.read(
+                              currentUserProvider.future,
+                            );
                             if (currentUser == null) {
                               if (context.mounted) {
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(content: Text('ユーザー情報が見つかりません')),
+                                  const SnackBar(
+                                    content: Text('ユーザー情報が見つかりません'),
+                                  ),
                                 );
                               }
                               return;
                             }
-                            
+
                             // 自分自身をホストとしてセッションに追加
-                            final memberController = ref.read(memberControllerProvider);
+                            final memberController = ref.read(
+                              memberControllerProvider,
+                            );
                             await memberController.joinSession(
                               sessionId: session.id!,
                               iconUrl: currentUser.iconUrl,
@@ -124,7 +139,7 @@ class HomePage extends ConsumerWidget {
                               bio: currentUser.bio,
                               role: 'host', // ホストとして追加
                             );
-                            
+
                             if (context.mounted) {
                               await RoomLobbyPageRoute(
                                 qrCode: session.qrCode,
@@ -143,7 +158,7 @@ class HomePage extends ConsumerWidget {
                         leading: Icon(
                           Symbols.group,
                           size: 24.w,
-                          color: Colors.white,
+                          color: appColors.white,
                         ),
                         text: 'ルームを作成する (幹事)',
                         height: 56,
@@ -156,12 +171,12 @@ class HomePage extends ConsumerWidget {
                         leading: Icon(
                           Symbols.login,
                           size: 24.w,
-                          color: Colors.black,
+                          color: appColors.black,
                         ),
                         text: 'ルームに参加する (ゲスト)',
                         height: 56,
-                        textColor: Colors.black,
-                        backgroundColor: Colors.white,
+                        textColor: appColors.black,
+                        backgroundColor: appColors.white,
                       ),
                     ],
                   ),

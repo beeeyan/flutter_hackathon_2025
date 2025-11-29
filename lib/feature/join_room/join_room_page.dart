@@ -4,6 +4,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
 import '../../config/app_sizes.dart';
+import '../../config/theme/theme_extension.dart';
 import '../../routing/go_router.dart';
 import '../../widgets/app_filled_button.dart';
 import '../../widgets/app_text_form_field.dart';
@@ -19,6 +20,8 @@ class JoinRoomPage extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final appColors = Theme.of(context).appColors;
+    final appTextStyles = Theme.of(context).appTextStyles;
     final roomIdController = useTextEditingController();
     final scannerController = useMemoized(MobileScannerController.new);
 
@@ -50,7 +53,8 @@ class JoinRoomPage extends HookConsumerWidget {
                       child: Stack(
                         children: [
                           MobileScanner(
-                            controller: scannerController,                            onDetect: (capture) async {
+                            controller: scannerController,
+                            onDetect: (capture) async {
                               final barcodes = capture.barcodes;
                               for (final barcode in barcodes) {
                                 if (barcode.rawValue != null) {
@@ -77,17 +81,17 @@ class JoinRoomPage extends HookConsumerWidget {
                         child: Divider(
                           height: 1,
                           thickness: 1,
-                          color: Colors.grey.withValues(alpha: 0.3),
+                          color: appColors.textSecondary,
                         ),
                       ),
-                      const Padding(
-                        padding: EdgeInsets.symmetric(
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
                           horizontal: AppSizes.s16,
                         ),
                         child: Text(
-                          'または ID を入力',
-                          style: TextStyle(
-                            color: Colors.grey,
+                          'または IDを入力',
+                          style: appTextStyles.t12Regular.copyWith(
+                            color: appColors.textSecondary,
                           ),
                         ),
                       ),
@@ -95,7 +99,7 @@ class JoinRoomPage extends HookConsumerWidget {
                         child: Divider(
                           height: 1,
                           thickness: 1,
-                          color: Colors.grey.withValues(alpha: 0.3),
+                          color: appColors.textSecondary,
                         ),
                       ),
                     ],
@@ -104,9 +108,14 @@ class JoinRoomPage extends HookConsumerWidget {
                   AppGaps.g32,
 
                   // ルームID入力フォーム
-                  const Align(
+                  Align(
                     alignment: Alignment.centerLeft,
-                    child: Text('ルームID'),
+                    child: Text(
+                      'ルームID',
+                      style: appTextStyles.t14Medium.copyWith(
+                        color: appColors.textMain,
+                      ),
+                    ),
                   ),
 
                   AppTextFormField(
@@ -138,7 +147,11 @@ class JoinRoomPage extends HookConsumerWidget {
   }
 
   /// セッション参加処理
-  Future<void> _joinSession(BuildContext context, WidgetRef ref, String qrCode) async {
+  Future<void> _joinSession(
+    BuildContext context,
+    WidgetRef ref,
+    String qrCode,
+  ) async {
     try {
       // 現在のユーザー情報を取得
       final currentUser = await ref.read(currentUserProvider.future);
@@ -192,6 +205,7 @@ class _QRScannerOverlay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final appColors = Theme.of(context).appColors;
     return Stack(
       children: [
         // L字型のコーナー
@@ -209,7 +223,7 @@ class _QRScannerOverlay extends StatelessWidget {
                     size: const Size(40, 40),
                     painter: _CornerPainter(
                       corner: Corner.topLeft,
-                      color: Colors.grey.withValues(alpha: 0.7),
+                      color: appColors.textSecondary,
                     ),
                   ),
                 ),
@@ -221,7 +235,7 @@ class _QRScannerOverlay extends StatelessWidget {
                     size: const Size(40, 40),
                     painter: _CornerPainter(
                       corner: Corner.topRight,
-                      color: Colors.grey.withValues(alpha: 0.7),
+                      color: appColors.textSecondary,
                     ),
                   ),
                 ),
@@ -233,7 +247,7 @@ class _QRScannerOverlay extends StatelessWidget {
                     size: const Size(40, 40),
                     painter: _CornerPainter(
                       corner: Corner.bottomLeft,
-                      color: Colors.grey.withValues(alpha: 0.7),
+                      color: appColors.textSecondary,
                     ),
                   ),
                 ),
@@ -245,7 +259,7 @@ class _QRScannerOverlay extends StatelessWidget {
                     size: const Size(40, 40),
                     painter: _CornerPainter(
                       corner: Corner.bottomRight,
-                      color: Colors.grey.withValues(alpha: 0.7),
+                      color: appColors.textSecondary,
                     ),
                   ),
                 ),

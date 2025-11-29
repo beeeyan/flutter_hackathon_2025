@@ -3,6 +3,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../config/app_sizes.dart';
+import '../../config/theme/theme_extension.dart';
 import '../../routing/go_router.dart';
 import '../../widgets/app_filled_button.dart';
 import '../../widgets/app_profile_icon.dart';
@@ -27,6 +28,8 @@ class ProfileSetupPage extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final appColors = Theme.of(context).appColors;
+    final appTextStyles = Theme.of(context).appTextStyles;
     final selectedIconUrl = useState<String>(iconUrls[0]);
     final nicknameController = useTextEditingController();
     final bioController = useTextEditingController();
@@ -51,9 +54,14 @@ class ProfileSetupPage extends HookConsumerWidget {
 
                 AppGaps.g32,
 
-                const Align(
+                Align(
                   alignment: Alignment.centerLeft,
-                  child: Text('またはデフォルトから選択'),
+                  child: Text(
+                    'またはデフォルトから選択',
+                    style: appTextStyles.t14Medium.copyWith(
+                      color: appColors.textSecondary,
+                    ),
+                  ),
                 ),
 
                 AppGaps.g8,
@@ -97,7 +105,7 @@ class ProfileSetupPage extends HookConsumerWidget {
                               width: AppSizes.s48,
                               height: AppSizes.s48,
                               decoration: BoxDecoration(
-                                color: Colors.white.withValues(alpha: 0.3),
+                                color: appColors.white.withValues(alpha: 0.3),
                                 shape: BoxShape.circle,
                               ),
                             ),
@@ -110,9 +118,14 @@ class ProfileSetupPage extends HookConsumerWidget {
                 AppGaps.g32,
 
                 // nickname入力フォーム
-                const Align(
+                Align(
                   alignment: Alignment.centerLeft,
-                  child: Text('ニックネーム'),
+                  child: Text(
+                    'ニックネーム',
+                    style: appTextStyles.t14Medium.copyWith(
+                      color: appColors.textMain,
+                    ),
+                  ),
                 ),
 
                 AppTextFormField(
@@ -123,9 +136,14 @@ class ProfileSetupPage extends HookConsumerWidget {
                 AppGaps.g32,
 
                 // bio入力フォーム
-                const Align(
+                Align(
                   alignment: Alignment.centerLeft,
-                  child: Text('自己紹介'),
+                  child: Text(
+                    '自己紹介',
+                    style: appTextStyles.t14Medium.copyWith(
+                      color: appColors.textMain,
+                    ),
+                  ),
                 ),
 
                 AppTextFormField(
