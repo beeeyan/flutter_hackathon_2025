@@ -79,15 +79,20 @@ class MyakuGame extends Forge2DGame with TapCallbacks {
     final screenSize = size;
     final worldWidth = screenSize.x / gameZoom;
 
+    // ボールの配置に使う幅（両端にマージン）
+    final usableWidth = worldWidth - MemberBody.baseRadius * 4;
+
     for (var i = 0; i < members.length; i++) {
       final member = members[i];
 
-      // ランダムな初期位置（画面上部）
-      final x =
-          -worldWidth / 2 +
-          MemberBody.baseRadius +
-          _random.nextDouble() * (worldWidth - MemberBody.baseRadius * 2);
-      final y = -20.0 - (i * 3.0); // 少しずつ上にずらして落下させる
+      // 横方向は均等に配置し、少しランダムなオフセットを加える
+      final baseX = -usableWidth / 2 + (i % 5 + 0.5) * (usableWidth / 5);
+      final randomOffset = (_random.nextDouble() - 0.5) * MemberBody.baseRadius;
+      final x = baseX + randomOffset;
+
+      // 縦方向は行ごとに分けて配置（5個ずつ）
+      final row = i ~/ 5;
+      final y = -10.0 - (row * 5.0) - _random.nextDouble() * 2;
 
       final memberBody = MemberBody(
         uid: member.uid,

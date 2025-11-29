@@ -12,7 +12,8 @@ class MemberBody extends BodyComponent {
     required this.nickname,
     required Vector2 initialPosition,
     this.avatarImage,
-  }) : _initialPosition = initialPosition;
+  }) : _initialPosition = initialPosition,
+       super(renderBody: false); // カスタム描画するのでfalse
 
   /// ユーザーUID
   final String uid;
@@ -26,17 +27,17 @@ class MemberBody extends BodyComponent {
   /// 初期位置
   final Vector2 _initialPosition;
 
-  /// 基本半径（メートル換算）
+  /// 基本半径（メートル換算）- ワールド座標系での半径
   static const double baseRadius = 3;
 
   /// 現在の半径
   double currentRadius = baseRadius;
 
   /// 最大半径（上限）
-  static const double maxRadius = 10;
+  static const double maxRadius = 6;
 
   /// 巨大化係数
-  static const double growthFactor = 0.1;
+  static const double growthFactor = 0.075;
 
   /// ボディを所有していることを示すフラグ
   bool _bodyCreated = false;
@@ -62,7 +63,7 @@ class MemberBody extends BodyComponent {
     final fixtureDef = FixtureDef(
       shape,
       friction: 0.3,
-      restitution: 0.4,
+      restitution: 0.5, // 跳ね返り係数
     );
     targetBody.createFixture(fixtureDef);
   }
@@ -91,9 +92,9 @@ class MemberBody extends BodyComponent {
 
   @override
   void render(Canvas canvas) {
-    // 円形のクリッピングパス
-    final screenRadius = currentRadius * 10; // ズームに応じて調整
-    final rect = Rect.fromCircle(center: Offset.zero, radius: screenRadius);
+    // 描画半径（物理半径と同じ）
+    final drawRadius = currentRadius;
+    final rect = Rect.fromCircle(center: Offset.zero, radius: drawRadius);
 
     canvas.save();
 
@@ -123,7 +124,7 @@ class MemberBody extends BodyComponent {
           text: nickname.isNotEmpty ? nickname[0] : '?',
           style: TextStyle(
             color: Colors.white,
-            fontSize: screenRadius * 0.8,
+            fontSize: drawRadius * 0.8,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -141,14 +142,14 @@ class MemberBody extends BodyComponent {
 
     canvas.restore();
 
-    // 外枠
+    // 外枠（白い枠線）
     canvas.drawCircle(
       Offset.zero,
-      screenRadius,
+      drawRadius,
       Paint()
         ..color = Colors.white
         ..style = PaintingStyle.stroke
-        ..strokeWidth = 2,
+        ..strokeWidth = 0.1, // ワールド座標系なので細く
     );
   }
 
