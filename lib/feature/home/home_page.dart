@@ -6,13 +6,14 @@ import 'package:material_symbols_icons/symbols.dart';
 import '../../config/app_sizes.dart';
 import '../../config/theme/theme_extension.dart';
 import '../../routing/go_router.dart';
+import '../../util/page_mixin.dart';
 import '../../widgets/app_filled_button.dart';
 import '../../widgets/app_profile_icon.dart';
 import '../session/provider/member_provider.dart';
 import '../session/provider/session_provider.dart';
 import '../user/application/state/current_user_provider.dart';
 
-class HomePage extends ConsumerWidget {
+class HomePage extends ConsumerWidget with PageMixin {
   const HomePage({super.key});
 
   static const name = 'home_page';
@@ -106,54 +107,52 @@ class HomePage extends ConsumerWidget {
                     children: [
                       AppFilledButton(
                         onPressed: () async {
-                          try {
-                            final controller = ref.read(
-                              sessionControllerProvider,
-                            );
-                            // セッションを作成してQRコードを取得
-                            final session = await controller.issueQRCode();
+                          await execute(
+                            context,
+                            ref,
+                            action: () async {
+                              final controller = ref.read(
+                                sessionControllerProvider,
+                              );
+                              // セッションを作成してQRコードを取得
+                              final session = await controller.issueQRCode();
 
-                            // 現在のユーザー情報を取得
-                            final currentUser = await ref.read(
-                              currentUserProvider.future,
-                            );
-                            if (currentUser == null) {
+                              if (user == null) {
+                                throw Exception('ユーザー情報が見つかりません');
+                              }
+
+                              // 自分自身をホストとしてセッションに追加
+                              final memberController = ref.read(
+                                memberControllerProvider,
+                              );
+                              await memberController.joinSession(
+                                sessionId: session.id!,
+                                iconUrl: user.iconUrl,
+                                nickname: user.nickname,
+                                bio: user.bio,
+                                role: 'host', // ホストとして追加
+                              );
+                            },
+                            onComplete: () async {
+                              // 最新のセッション情報を取得して遷移
+                              final sessionState = ref.read(
+                                sessionNotifierProvider,
+                              );
+                              if (sessionState.hasValue &&
+                                  sessionState.value != null) {
+                                await RoomLobbyPageRoute(
+                                  qrCode: sessionState.value!.qrCode,
+                                ).push<void>(context);
+                              }
+                            },
+                            onExceptionCatch: (e) async {
                               if (context.mounted) {
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text('ユーザー情報が見つかりません'),
-                                  ),
+                                  SnackBar(content: Text('エラーが発生しました: $e')),
                                 );
                               }
-                              return;
-                            }
-
-                            // 自分自身をホストとしてセッションに追加
-                            final memberController = ref.read(
-                              memberControllerProvider,
-                            );
-                            await memberController.joinSession(
-                              sessionId: session.id!,
-                              iconUrl: currentUser.iconUrl,
-                              nickname: currentUser.nickname,
-                              bio: currentUser.bio,
-                              role: 'host', // ホストとして追加
-                            );
-
-                            if (context.mounted) {
-                              await RoomLobbyPageRoute(
-                                qrCode: session.qrCode,
-                              ).push<void>(
-                                context,
-                              );
-                            }
-                          } on Exception catch (e) {
-                            if (context.mounted) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text('エラーが発生しました: $e')),
-                              );
-                            }
-                          }
+                            },
+                          );
                         },
                         leading: Icon(
                           Symbols.group,
