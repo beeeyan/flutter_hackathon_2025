@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../../auth/application/state/auth_state.dart';
+import '../auth/application/state/auth_state.dart';
+import '../user/domain/users.dart';
+import '../user/infra/user_repository.dart';
 
 class MyHomePage extends HookConsumerWidget {
   const MyHomePage({super.key});
@@ -14,10 +16,18 @@ class MyHomePage extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final counter = useState(0);
     final authState = ref.watch(authStateProvider);
+    final user = useState<Users?>(null);
 
     void incrementCounter() {
       counter.value++;
     }
+
+    useEffect(() {
+      () async {
+        user.value = await ref.watch(userRepositoryProvider).getUser();
+      }();
+      return;
+    });
 
     return Scaffold(
       body: Center(
@@ -25,6 +35,8 @@ class MyHomePage extends HookConsumerWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Text('UID: ${authState.value?.uid}'),
+            Text('Nickname: ${user.value?.nickname}'),
+            Text('Bio: ${user.value?.bio}'),
             const Text(
               'You have pushed the button this many times:',
             ),
