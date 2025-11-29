@@ -9,6 +9,7 @@
 users/{uid}                          # ユーザープロフィール
 sessions/{sessionId}                 # マッチングセッション
 sessions/{sessionId}/members/{uid}   # セッション参加メンバー
+defaultIcons/{iconId}                # デフォルトアイコン画像一覧
 ```
 
 ### users コレクション
@@ -19,11 +20,13 @@ sessions/{sessionId}/members/{uid}   # セッション参加メンバー
 
 ```json
 {
-  "iconUrl": "https://.../avatar.png",  // プロフィール画像URL
-  "nickname": "たろう",                    // ニックネーム
-  "bio": "よろしく！",                     // 一言コメント（自己紹介）
-  "createdAt": "<serverTimestamp>",     // 作成日時
-  "updatedAt": "<serverTimestamp>"      // 更新日時
+  "iconUrl": "https://.../avatar.png",      // プロフィール画像URL（デフォルトアイコンまたはアップロード画像）
+  "iconType": "default",                    // "default" または "uploaded"
+  "defaultIconId": "icon_001",              // デフォルトアイコン使用時のID（iconType="default"の場合）
+  "nickname": "たろう",                       // ニックネーム
+  "bio": "よろしく！",                        // 一言コメント（自己紹介）
+  "createdAt": "<serverTimestamp>",         // 作成日時
+  "updatedAt": "<serverTimestamp>"          // 更新日時
 }
 ```
 
@@ -75,23 +78,73 @@ sessions/{sessionId}/members/{uid}   # セッション参加メンバー
 }
 ```
 
+### defaultIcons コレクション
+
+アップロード機能がない初期段階で使用するデフォルトアイコン画像の一覧を管理します。
+
+**パス**: `defaultIcons/{iconId}`
+
+```json
+{
+  "url": "https://example.com/icons/avatar_01.png",  // アイコン画像URL
+  "name": "アバター01",                               // アイコン名
+  "category": "animal",                              // カテゴリ（animal, character, abstract など）
+  "isActive": true,                                  // 利用可能かどうか
+  "order": 1,                                        // 表示順序
+  "createdAt": "<serverTimestamp>",                  // 作成日時
+  "updatedAt": "<serverTimestamp>"                   // 更新日時
+}
+```
+
+**使用例**:
+```json
+{
+  "defaultIcons/icon_001": {
+    "url": "https://example.com/icons/cat.png",
+    "name": "ねこ",
+    "category": "animal",
+    "isActive": true,
+    "order": 1
+  },
+  "defaultIcons/icon_002": {
+    "url": "https://example.com/icons/dog.png", 
+    "name": "いぬ",
+    "category": "animal",
+    "isActive": true,
+    "order": 2
+  },
+  "defaultIcons/icon_003": {
+    "url": "https://example.com/icons/smile.png",
+    "name": "スマイル",
+    "category": "character",
+    "isActive": true,
+    "order": 3
+  }
+}
+```
+
 ### データフロー
 
 1. **ユーザープロフィール追加**
    - `users/{uid}` にデータ追加
+   - デフォルトアイコンの場合：`defaultIcons` コレクションから選択
 
-2. **QRコード発行**
+2. **デフォルトアイコン管理**
+   - `defaultIcons` コレクションからアイコン一覧を取得
+   - カテゴリ別・順序別での表示が可能
+
+3. **QRコード発行**
    - `sessions/{sessionId}` にデータ作成
    - `startAt`: `null`
    - `status`: `"closed"`
 
-3. **QRコード読み込み**
+4. **QRコード読み込み**
    - `sessions/{sessionId}/members/{uid}` にデータ作成
 
-4. **開始ボタン押下**
+5. **開始ボタン押下**
    - `sessions/{sessionId}` を更新
    - `startAt`: 開始時の時間
    - `status`: `"open"`
 
-5. **アイコンタップ**
+6. **アイコンタップ**
    - `sessions/{sessionId}/members/{targetUid}` の `bySender` データを更新
