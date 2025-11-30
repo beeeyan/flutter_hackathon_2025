@@ -11,6 +11,54 @@ sessions/{sessionId}                 # マッチングセッション
 sessions/{sessionId}/members/{uid}   # セッション参加メンバー
 ```
 
+### スキーマ図
+
+```mermaid
+erDiagram
+    %% コレクションの定義
+    users {
+        string uid PK "ドキュメントID (Auth UID)"
+        string iconUrl
+        string nickname
+        string bio
+        timestamp createdAt
+        timestamp updatedAt
+    }
+
+    sessions {
+        string sessionId PK "ドキュメントID"
+        string name
+        string hostUid FK "主催者のUID (users参照)"
+        string qrCode
+        string status "waiting | active | result"
+        timestamp createdAt
+        timestamp updatedAt
+    }
+
+    %% サブコレクションの定義
+    %% sessions/{sessionId}/members/{uid} を表現
+    sessions_members {
+        string uid PK, FK "ドキュメントID (Auth UID)"
+        string iconUrl "usersからのコピー"
+        string nickname "usersからのコピー"
+        string bio "usersからのコピー"
+        timestamp joinedAt
+        timestamp lastActiveAt
+        boolean isActive
+        string role "host | member"
+        map bySender "Map<uid, int>: 被タップ数"
+        map Sended "Map<uid, int>: 与タップ数"
+    }
+
+    %% リレーションシップの定義
+    %% ユーザーは複数のセッションメンバーとして参加する
+    users ||--o{ sessions_members : "joins as"
+    %% ユーザーは複数のセッションを主催する可能性がある
+    users ||--o{ sessions : "hosts"
+    %% セッションは複数のメンバー（サブコレクション）を持つ
+    sessions ||--|{ sessions_members : "contains (sub-collection)"
+```
+
 ### users コレクション
 
 ユーザーのプロフィール情報を格納します。

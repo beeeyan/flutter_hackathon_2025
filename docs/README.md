@@ -17,8 +17,66 @@
 詳細な仕様などは[docs/00_overview](./00_overview/)を参照ください。  
 
 ## 開発手法
-先にdocsに[アプリ概要書](./00_overview/01_app_overview.md)・[画面リスト](./00_overview/02_screen_list.md)・[Firestoreのスキーマ定義](./01_backend/01_firestore_schema.md)などを作成
 
+先にdocsに[アプリ概要書](./00_overview/01_app_overview.md)・[画面リスト](./00_overview/02_screen_list.md)・[Firestoreのスキーマ定義](./01_backend/01_firestore_schema.md)などを作成し、copilotに読み込ませて実装をした。
+  
+デザイン
+Figma Makeなどを駆使して作成した。  
+
+
+## ディレクトリ構成
+
+```
+├── lib/                      # アプリケーションのソースコード
+│   ├── main.dart            # エントリーポイント
+│   ├── config/              # アプリ全体の設定
+│   │   ├── firebase/        # Firebase設定（dev/prod環境別）
+│   │   ├── theme/           # テーマ設定（カラー、テキストスタイルなど）
+│   │   └── app_sizes.dart   # サイズ定数
+│   ├── enum/                # 列挙型定義
+│   ├── feature/             # 機能別のモジュール
+│   │   ├── user/            # ユーザー機能
+│   │   ├── session/         # セッション（ルーム）機能
+│   │   ├── join_room/       # ルーム参加機能
+│   │   ├── create_room/     # ルーム作成機能
+│   │   ├── room_lobby/      # ルームロビー機能
+│   │   └── ...              # その他の機能
+│   ├── routing/             # ルーティング設定（go_router）
+│   ├── util/                # ユーティリティ関数・Mixin
+│   └── widgets/             # 共通ウィジェット
+├── docs/                     # ドキュメント
+│   ├── README.md            # このファイル
+│   ├── 00_overview/         # アプリ概要・画面リスト
+│   ├── 01_backend/          # バックエンド仕様（Firestoreスキーマなど）
+│   └── 02_frontend/         # 画面別の仕様書
+├── android/                  # Android固有の設定
+│   └── app/src/
+│       ├── dev/             # 開発環境用設定
+│       └── prod/            # 本番環境用設定
+├── ios/                      # iOS固有の設定
+│   └── config/
+│       ├── dev/             # 開発環境用設定
+│       └── prod/            # 本番環境用設定
+├── assets/                   # 静的ファイル
+│   ├── images/              # 画像ファイル
+│   └── fonts/               # フォントファイル
+├── test/                     # テストコード
+├── pubspec.yaml             # パッケージ依存関係
+└── analysis_options.yaml    # Linter設定
+```
+
+## 技術選定や構成に関する理由
+
+- firebase
+    - リアルタイム通信の実装が容易
+    - Flutterとの親和性が高く、ある程度実装経験がある。
+- 匿名認証
+    - 個人情報などの登録はなしで、アカウント登録を極力簡略化し、誰もがすぐに利用できるようにするため。
+- なぜモバイルアプリにしたか
+    - 「投票」時のタップ操作をゲームをやっているような体験にしたく、Webよりもモバイルの方が効果的ではないかと思ったため。
+    -  触覚フィードバックなどを実装することができ、より「思いの強さ（脈）」の熱量を伝えることができると思ったため。
+- Flame
+    - 思いの強さを、物理演算などを駆使して、視覚的（アイコンが大きくなる）にゲーム感覚で伝えるため。
 
 ## 環境構築
 
@@ -92,4 +150,60 @@ $ fvm flutter run --debug --flavor prod --dart-define=FLAVOR=prod
 $ fvm flutter build appbundle --release --flavor prod --dart-define=FLAVOR=prod
 # iOS
 $ fvm flutter build ipa --flavor prod --dart-define=FLAVOR=prod
+```
+
+## 構成図・処理の流れ
+
+```mermaid
+graph TD
+    subgraph Client Side ["クライアントサイド (Flutter アプリ)"]
+        HostUser["幹事ユーザー<br>(iOS/Android)"]
+        GuestUser["参加者ユーザー<br>(iOS/Android)"]
+        
+        subgraph FlutterApp ["Flutter アプリケーションロジック"]
+            AuthLogic["認証・プロフィール管理"]
+            RoomLogic["ルーム管理・参加"]
+            TapController["タップ制御 & バッファリング処理<br>(Optimistic UI / Debounce)"]
+            GameTimer["ゲームタイマー管理<br>(クライアント計算)"]
+            ResultView["結果集計・表示"]
+        end
+    end
+
+    subgraph Firebase Platform ["バックエンドサイド (Firebase Platform)"]
+        FirebaseAuth["Authentication<br>(匿名認証)"]
+        Firestore["Cloud Firestore<br>(NoSQL リアルタイムDB)"]
+        Storage["Cloud Storage<br>(画像アップロード)"]
+    end
+
+    %% インタラクションの流れ
+
+    %% 1. 認証と初期設定
+    HostUser & GuestUser -->|アプリ起動・操作| FlutterApp
+    AuthLogic -->|1. 匿名ログイン| FirebaseAuth
+    AuthLogic -->|2. アバター画像アップロード| Storage
+    %% 修正箇所: ラベル全体を二重引用符で囲む方式に変更
+    AuthLogic -- "3. ユーザー情報保存<br>(ニックネーム, 画像URL)" --> Firestore
+
+    %% 2. ルーム管理
+    RoomLogic -->|4. ルーム作成/参加ID参照| Firestore
+
+    %% 3. ゲームメイン（タッピング）
+    %% 修正箇所: ラベル全体を二重引用符で囲む方式に変更
+    TapController -- "5. バッチ書き込み<br>(例:20タップ毎または一定時間後)" --> Firestore
+    Firestore -- "6. リアルタイム同期リスナー<br>(他者のタップ数、ルーム状態)" --> TapController
+    
+    %% 4. タイマーと結果
+    Firestore -- "ルーム状態監視<br>(開始/終了判定)" --> GameTimer
+    GameTimer -->|タイムアップ通知| TapController
+    GameTimer -->|タイムアップ通知| ResultView
+    ResultView -->|7. 最終結果取得・ペア判定| Firestore
+
+    %% スタイル定義
+    classDef firebase fill:#ffca28,stroke:#f57c00,color:black;
+    classDef client fill:#42a5f5,stroke:#1565c0,color:white;
+    classDef logic fill:#90caf9,stroke:#1565c0,color:black;
+
+    class FirebaseAuth,Firestore,Storage firebase;
+    class HostUser,GuestUser client;
+    class FlutterApp,AuthLogic,RoomLogic,TapController,GameTimer,ResultView logic;
 ```
