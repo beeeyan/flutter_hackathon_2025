@@ -1,7 +1,20 @@
 ## 案件概要記載
 
-公式サイトの URL
-バックログの URL
+[Tokyo Flutter Hackathon 2025](https://tokyo-flutter-hackathon.connpass.com/event/368402/)の「ほぼドコドア」チームのアプリ  
+  
+テーマ : 「みゃく」
+
+## アプリ概要
+
+アプリ名 **Myacle**  
+読み : ミャクる  
+  
+「脈」+「miracle」 奇跡の出会い、「脈来る」 etc.
+  
+コンセプト   
+「熱量（脈）」を「タップ数」で可視化する、合コン終盤専用のモバイルマッチングアプリ。
+  
+詳細な仕様などは[docs/00_overview](./00_overview/)を参照ください。  
 
 ## 環境構築
 
@@ -76,5 +89,3 @@ $ fvm flutter build appbundle --release --flavor prod --dart-define=FLAVOR=prod
 # iOS
 $ fvm flutter build ipa --flavor prod --dart-define=FLAVOR=prod
 ```
-
-## 構成図
