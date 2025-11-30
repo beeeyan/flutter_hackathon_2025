@@ -22,7 +22,7 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_hooks: ^0.21.2
-  flutter_launcher_icons: ^0.14.3
+  flutter_launcher_icons: ^0.14.4
   flutter_screenutil: ^5.9.3
   freezed_annotation: ^3.0.0
   gap: ^3.0.1
