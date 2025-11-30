@@ -12,6 +12,7 @@ import '../../widgets/app_profile_icon.dart';
 import '../session/provider/member_provider.dart';
 import '../session/provider/session_provider.dart';
 import '../user/application/state/current_user_provider.dart';
+import 'widget/app_icon_animation.dart';
 
 class HomePage extends ConsumerWidget with PageMixin {
   const HomePage({super.key});
@@ -61,28 +62,16 @@ class HomePage extends ConsumerWidget with PageMixin {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        // Logo circle
-                        Container(
-                          width: 120.w,
-                          height: 120.w,
-                          decoration: BoxDecoration(
-                            color: appColors.white,
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: appColors.black,
-                              width: 2,
-                            ),
-                          ),
-                          child: Icon(
-                            Symbols.favorite,
-                            size: 64.w,
-                            color: appColors.black,
-                          ),
+                        // Logo
+                        SizedBox(
+                          width: 160.w,
+                          height: 160.w,
+                          child: const AppIconAnimation(),
                         ),
                         SizedBox(height: 24.h),
                         // App name
                         Text(
-                          'Myaku',
+                          'Myacle',
                           style: appTextStyles.t48Black.copyWith(
                             color: appColors.textMain,
                           ),
@@ -90,7 +79,7 @@ class HomePage extends ConsumerWidget with PageMixin {
                         SizedBox(height: 8.h),
                         // Tagline
                         Text(
-                          'TAP TO FEEL THE HEAT',
+                          '伝える、伝わる、ミャクる',
                           style: appTextStyles.t12Medium.copyWith(
                             color: appColors.textSecondary,
                             letterSpacing: 1.2,

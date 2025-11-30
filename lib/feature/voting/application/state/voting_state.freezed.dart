@@ -218,7 +218,7 @@ return $default(_that.remainingSeconds,_that.remainingPoints,_that.isTimeUp,_tha
 
 
 class _VotingState implements VotingState {
-  const _VotingState({this.remainingSeconds = 60, this.remainingPoints = 100, this.isTimeUp = false, final  Map<String, int> sendQueue = const {}, final  Map<String, int> sentCounts = const {}, this.lastFlushTime}): _sendQueue = sendQueue,_sentCounts = sentCounts;
+  const _VotingState({this.remainingSeconds = 30, this.remainingPoints = 100, this.isTimeUp = false, final  Map<String, int> sendQueue = const {}, final  Map<String, int> sentCounts = const {}, this.lastFlushTime}): _sendQueue = sendQueue,_sentCounts = sentCounts;
   
 
 /// 残り時間（秒）
