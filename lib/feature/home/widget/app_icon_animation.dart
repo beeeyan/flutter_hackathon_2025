@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class AppIconAnimation extends StatefulWidget {
   const AppIconAnimation({super.key});
@@ -10,6 +11,7 @@ class AppIconAnimation extends StatefulWidget {
 class _AppIconAnimationState extends State<AppIconAnimation>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
+  bool _hasVibrated = false;
 
   @override
   void initState() {
@@ -18,10 +20,27 @@ class _AppIconAnimationState extends State<AppIconAnimation>
       vsync: this,
       duration: const Duration(milliseconds: 1400),
     )..repeat(); // ずっと流れ続ける
+
+    // 中央到達時（t ≈ 0.5）でバイブレーション
+    _controller.addListener(_onAnimationTick);
+  }
+
+  void _onAnimationTick() {
+    final value = _controller.value;
+    // 中央付近（0.48〜0.52）でバイブレーション発火
+    if (value >= 0.48 && value <= 0.52 && !_hasVibrated) {
+      HapticFeedback.mediumImpact();
+      _hasVibrated = true;
+    }
+    // 範囲外に出たらリセット（次のサイクル用）
+    if (value < 0.4 || value > 0.6) {
+      _hasVibrated = false;
+    }
   }
 
   @override
   void dispose() {
+    _controller.removeListener(_onAnimationTick);
     _controller.dispose();
     super.dispose();
   }
