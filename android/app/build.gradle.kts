@@ -43,12 +43,12 @@ android {
         create("dev") {
             dimension = "flavor-type"
             applicationIdSuffix = ".dev"
-            resValue("string", "app_name", "アプリ名.dev")
+            resValue("string", "app_name", "Myacle.dev")
         }
         create("prod") {
             dimension = "flavor-type"
             applicationIdSuffix = ""
-            resValue("string", "app_name", "アプリ名")
+            resValue("string", "app_name", "Myacle")
         }
     }
 }
