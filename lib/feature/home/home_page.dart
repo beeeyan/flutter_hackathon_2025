@@ -71,7 +71,7 @@ class HomePage extends ConsumerWidget with PageMixin {
                         SizedBox(height: 24.h),
                         // App name
                         Text(
-                          'Myaku',
+                          'Myacle',
                           style: appTextStyles.t48Black.copyWith(
                             color: appColors.textMain,
                           ),
@@ -79,7 +79,7 @@ class HomePage extends ConsumerWidget with PageMixin {
                         SizedBox(height: 8.h),
                         // Tagline
                         Text(
-                          'TAP TO FEEL THE HEAT',
+                          '伝える、伝わる、ミャクる',
                           style: appTextStyles.t12Medium.copyWith(
                             color: appColors.textSecondary,
                             letterSpacing: 1.2,
