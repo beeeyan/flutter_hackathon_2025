@@ -7,7 +7,7 @@ part 'voting_state.freezed.dart';
 abstract class VotingState with _$VotingState {
   const factory VotingState({
     /// 残り時間（秒）
-    @Default(60) int remainingSeconds,
+    @Default(30) int remainingSeconds,
 
     /// 残り持ち点
     @Default(100) int remainingPoints,
@@ -32,7 +32,7 @@ class VotingConfig {
   VotingConfig._();
 
   /// 投票時間（秒）
-  static const int votingDurationSeconds = 60;
+  static const int votingDurationSeconds = 30;
 
   /// 持ち点上限
   static const int maxPoints = 100;
