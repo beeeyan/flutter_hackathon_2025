@@ -228,7 +228,7 @@ class ResultPage extends HookConsumerWidget {
               width: 80,
               height: 80,
               decoration: BoxDecoration(
-                color: appColors.containerFill.withValues(alpha: 0.2),
+                color: appColors.containerFill.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
               child: Icon(
@@ -253,7 +253,7 @@ class ResultPage extends HookConsumerWidget {
                   Container(
                     padding: const EdgeInsets.all(AppSizes.s16),
                     decoration: BoxDecoration(
-                      color: appColors.containerFill.withValues(alpha: 0.2),
+                      color: appColors.containerFill.withValues(alpha: 0.1),
                       border: Border.all(
                         color: appColors.textSecondary,
                       ),
@@ -356,29 +356,32 @@ class ResultPage extends HookConsumerWidget {
     final appColors = Theme.of(context).appColors;
     final appTextStyles = Theme.of(context).appTextStyles;
 
-    final voters = members.map((member) {
-      // 自分は除外
-      if (member.uid == myMember.uid) {
-        return null;
-      }
+    final voters = members
+        .map((member) {
+          // 自分は除外
+          if (member.uid == myMember.uid) {
+            return null;
+          }
 
-      // 自分に投票していない人は除外
-      if (member.sended[myMember.uid] == null) {
-        return null;
-      }
+          // 自分に投票していない人は除外
+          if (member.sended[myMember.uid] == null) {
+            return null;
+          }
 
-      // 自分への投票数を取得
-      return Voter(
-        uid: member.uid,
-        nickname: member.nickname,
-        iconUrl: member.iconUrl,
-        voteCount: member.sended[myMember.uid]!,
-      );
-    }).toList();
+          // 自分への投票数を取得
+          return Voter(
+            uid: member.uid,
+            nickname: member.nickname,
+            iconUrl: member.iconUrl,
+            voteCount: member.sended[myMember.uid]!,
+          );
+        })
+        .whereType<Voter>()
+        .toList();
 
     // votersを投票数で降順にソート
     if (voters.isNotEmpty) {
-      voters.sort((a, b) => (b?.voteCount ?? 0).compareTo(a?.voteCount ?? 0));
+      voters.sort((a, b) => b.voteCount.compareTo(a.voteCount));
     }
 
     return ListView.separated(
@@ -395,7 +398,7 @@ class ResultPage extends HookConsumerWidget {
         return Row(
           children: [
             AppProfileIcon(
-              imageUrl: voter?.iconUrl ?? '',
+              imageUrl: voter.iconUrl,
               size: 48.w,
             ),
             SizedBox(width: 12.w),
@@ -404,7 +407,7 @@ class ResultPage extends HookConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    voter?.nickname ?? '',
+                    voter.nickname,
                     style: appTextStyles.t16Bold.copyWith(
                       color: appColors.textMain,
                     ),
@@ -419,7 +422,7 @@ class ResultPage extends HookConsumerWidget {
                       ),
                       SizedBox(width: 4.w),
                       Text(
-                        '${voter?.voteCount ?? ''}回',
+                        '${voter.voteCount}回',
                         style: appTextStyles.t14Regular.copyWith(
                           color: appColors.textSecondary,
                         ),
