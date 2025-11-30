@@ -29,7 +29,7 @@ class _AppIconAnimationState extends State<AppIconAnimation>
     final value = _controller.value;
     // 中央付近（0.48〜0.52）でバイブレーション発火
     if (value >= 0.48 && value <= 0.52 && !_hasVibrated) {
-      HapticFeedback.mediumImpact();
+      HapticFeedback.heavyImpact();
       _hasVibrated = true;
     }
     // 範囲外に出たらリセット（次のサイクル用）
