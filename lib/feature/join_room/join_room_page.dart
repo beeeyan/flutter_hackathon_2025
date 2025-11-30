@@ -25,6 +25,27 @@ class JoinRoomPage extends HookConsumerWidget with PageMixin {
     final appTextStyles = Theme.of(context).appTextStyles;
     final roomIdController = useTextEditingController();
     final scannerController = useMemoized(MobileScannerController.new);
+    
+    // ボタンの活性状態を管理するState
+    final isButtonEnabled = useState<bool>(false);
+
+    // テキストフィールドの変更を監視
+    useEffect(() {
+      void updateButtonState() {
+        isButtonEnabled.value = roomIdController.text.isNotEmpty;
+      }
+
+      // 初回チェック
+      updateButtonState();
+
+      // テキストコントローラーにリスナーを追加
+      roomIdController.addListener(updateButtonState);
+
+      // クリーンアップ
+      return () {
+        roomIdController.removeListener(updateButtonState);
+      };
+    }, []);
 
     useEffect(() {
       return scannerController.dispose;
@@ -149,7 +170,7 @@ class JoinRoomPage extends HookConsumerWidget with PageMixin {
 
                   // この部屋に入るボタン
                   AppFilledButton(
-                    onPressed: roomIdController.text.isNotEmpty
+                    onPressed: isButtonEnabled.value
                         ? () async {
                             final qrCode = roomIdController.text;
                             await execute(
