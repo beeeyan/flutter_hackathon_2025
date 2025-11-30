@@ -72,9 +72,9 @@ $ fvm flutter run --debug --flavor prod --dart-define=FLAVOR=prod
 
 ```console
 # Android
-$ flutter build appbundle --release --flavor prod --dart-define=FLAVOR=prod
+$ fvm flutter build appbundle --release --flavor prod --dart-define=FLAVOR=prod
 # iOS
-$ flutter build ipa --flavor prod --dart-define=FLAVOR=prod
+$ fvm flutter build ipa --flavor prod --dart-define=FLAVOR=prod
 ```
 
 ## 構成図
