@@ -16,6 +16,10 @@
   
 詳細な仕様などは[docs/00_overview](./00_overview/)を参照ください。  
 
+## 開発手法
+先にdocsに[アプリ概要書](./00_overview/01_app_overview.md)・[画面リスト](./00_overview/02_screen_list.md)・[Firestoreのスキーマ定義](./01_backend/01_firestore_schema.md)などを作成
+
+
 ## 環境構築
 
 fvm と VSCode の利用を想定している。  
