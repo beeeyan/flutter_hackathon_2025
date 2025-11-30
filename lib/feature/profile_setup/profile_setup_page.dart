@@ -36,6 +36,31 @@ class ProfileSetupPage extends HookConsumerWidget with PageMixin {
     final isUploadingIcon = useState<bool>(false);
     final nicknameController = useTextEditingController();
     final bioController = useTextEditingController();
+    
+    // ボタンの活性状態を管理するState
+    final isButtonEnabled = useState<bool>(false);
+
+    // テキストフィールドの変更を監視
+    useEffect(() {
+      void updateButtonState() {
+        isButtonEnabled.value = selectedIconUrl.value != null &&
+            nicknameController.text.isNotEmpty &&
+            bioController.text.isNotEmpty;
+      }
+
+      // 初回チェック
+      updateButtonState();
+
+      // テキストコントローラーにリスナーを追加
+      nicknameController.addListener(updateButtonState);
+      bioController.addListener(updateButtonState);
+
+      // クリーンアップ
+      return () {
+        nicknameController.removeListener(updateButtonState);
+        bioController.removeListener(updateButtonState);
+      };
+    }, [selectedIconUrl.value]);
 
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
@@ -241,12 +266,8 @@ class ProfileSetupPage extends HookConsumerWidget with PageMixin {
                 ),
 
                 AppFilledButton(
-                  onPressed:
-                      selectedIconUrl.value == null ||
-                          nicknameController.value.text.isEmpty ||
-                          bioController.value.text.isEmpty
-                      ? null
-                      : () async {
+                  onPressed: isButtonEnabled.value
+                      ? () async {
                           await execute(
                             context,
                             ref,
@@ -263,7 +284,8 @@ class ProfileSetupPage extends HookConsumerWidget with PageMixin {
                               const HomePageRoute().go(context);
                             },
                           );
-                        },
+                        }
+                      : null,
                   text: '設定を保存してはじめる',
                 ),
 
